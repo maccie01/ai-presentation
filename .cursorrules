@@ -1,0 +1,126 @@
+# AI Presentation Project - Cursor Rules
+
+## Project Patterns
+
+### Naming Conventions
+- React components: PascalCase (e.g., `PromptEditor.tsx`)
+- Utility functions: camelCase (e.g., `formatResponse.ts`)
+- CSS modules: [component].module.css
+- Type definitions: PascalCase (e.g., `PromptConfig.ts`)
+- Constants: UPPER_SNAKE_CASE
+
+### File Organization
+- Components should be organized by feature area
+- Each major section should have its own directory
+- Shared components should be in `components/ui`
+- Interactive demos should be in `components/interactive`
+- Section-specific components should be in `components/sections`
+
+### Code Style
+- Use TypeScript for all files
+- Use functional components with hooks
+- Use arrow functions for component definitions
+- Prefer named exports over default exports
+- Use destructuring for props
+- Document complex components with JSDoc comments
+
+### Design System Integration
+- Follow PDS guidelines for all UI components
+- Use PDS color tokens instead of hardcoded values
+- Respect PDS spacing system
+- Use PDS typography scale
+- Extend PDS components rather than creating duplicates
+
+### Interactive Components
+- All interactive elements should be accessible
+- Provide keyboard navigation alternatives
+- Include loading states for async operations
+- Handle errors gracefully with user feedback
+- Persist state where appropriate for user convenience
+
+## User Preferences
+
+### Todo-Driven Development
+- Reference todo.md as the source of truth for development tasks
+- Before starting work, check todo.md for the next priority tasks
+- Update todo.md with task progress (checklist items) as you work
+- Add new subtasks to todo.md when discovered during implementation
+- Break down complex tasks into smaller, manageable subtasks
+- Document any implementation decisions or challenges in the todo comments
+- After completing a component or feature, mark all related tasks as complete
+- Review todo.md regularly to ensure alignment with current priorities
+- When hitting roadblocks, add detailed notes to the corresponding todo item
+
+### Development Flow
+- Initialize project with Next.js App Router following the todo.md setup tasks
+- Use TypeScript for type safety as specified in todo.md
+- Implement components according to the hierarchy defined in todo.md
+- Follow the task ordering in todo.md for component implementation
+- Complete one section at a time according to the todo.md section organization
+- Update the memory bank with progress after completing significant todo items
+- Add explicit todos for any technical debt that needs to be addressed later
+
+### Content Organization
+- Each section should be self-contained as specified in todo.md
+- Content should be structured in progressive complexity
+- Include practical examples for all concepts
+- Security-focused examples should be realistic and relevant
+- Automotive context should be included where appropriate
+- Follow the diagram and visualization guidelines in todo.md
+
+### Documentation
+- Keep memory bank updated with progress
+- Document technical decisions in techContext.md
+- Track component patterns in systemPatterns.md
+- Update activeContext.md with current focus
+- Maintain todo.md as the current project roadmap and status tracker
+
+## Project Intelligence
+
+### Critical Implementation Paths
+- Set up Next.js with TypeScript according to todo.md specifications
+- Integrate Porsche Design System following the todo.md integration steps
+- Create base layout and navigation as defined in the layout components section
+- Implement the code editor component according to todo.md specifications
+- Build interactive demonstration components as outlined in todo.md
+- Develop visualization components following the diagram system in todo.md
+
+### Known Challenges
+- PDS integration with custom styling needs
+- Performance of interactive components
+- Responsive design of complex visualizations
+- Accessibility of interactive elements
+- Balancing information density with usability
+- Maintaining and updating todo.md as the project evolves
+
+### Evolution Tracking
+- Document significant architectural changes in todo.md and memory bank
+- Track component refactoring decisions
+- Note performance optimizations
+- Record accessibility improvements
+- Update todo.md with new requirements or changed priorities
+
+## Tool Usage Patterns
+
+### VSCode/Cursor
+- Use ESLint for code quality
+- Use Prettier for formatting
+- Use GitHub Copilot for code suggestions
+- Use React Developer Tools for component debugging
+- Use Performance tools for optimization
+- Use todo.md for task tracking and project management
+
+### Next.js
+- Use App Router for routing
+- Use server components where appropriate
+- Use client components for interactive elements
+- Use image optimization for assets
+- Use font optimization for typography
+
+### Project Management
+- Start each development session by reviewing todo.md
+- End each session by updating todo.md with progress
+- Use todo.md to communicate progress and blockers
+- Break down large tasks in todo.md into smaller, actionable items
+- Prioritize tasks in todo.md based on dependencies and critical path
+- Track completion by checking off items in todo.md 
