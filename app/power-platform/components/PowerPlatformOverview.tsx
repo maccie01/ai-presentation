@@ -12,6 +12,7 @@ import ReactFlow, {
   MarkerType
 } from 'reactflow';
 import 'reactflow/dist/style.css';
+import { useTheme } from '@/lib/themeContext';
 
 // Custom node component for Power Platform products
 const PlatformNode: React.FC<any> = ({ data }) => {
@@ -25,6 +26,7 @@ const PlatformNode: React.FC<any> = ({ data }) => {
       <div 
         className={`p-4 rounded-lg shadow-md cursor-pointer text-center ${data.className}`} 
         onClick={() => data.onSelect(data.id)}
+        style={{ backgroundColor: data.bgColor, color: 'inherit', borderColor: data.borderColor }}
       >
         <div className="icon-container mb-2">
           {data.icon && <data.icon size={36} />}
@@ -66,7 +68,7 @@ const AnimatedEdge: React.FC<any> = ({
       <text>
         <textPath
           href={`#${id}`}
-          style={{ fontSize: '12px' }}
+          style={{ fontSize: '12px', fill: data?.textColor || 'inherit' }}
           startOffset="50%"
           textAnchor="middle"
         >
@@ -99,6 +101,25 @@ interface ComponentDetail {
 // Main component
 export function PowerPlatformOverview() {
   const [selectedComponent, setSelectedComponent] = useState<string | null>(null);
+  const { isDarkMode } = useTheme();
+  
+  // Theme-aware colors
+  const getNodeColors = (baseColor: string, darkBaseColor: string) => {
+    return {
+      bg: isDarkMode ? darkBaseColor : `${baseColor}-100`,
+      border: isDarkMode ? darkBaseColor.replace('rgb', 'rgba').replace(')', ', 0.5)') : `${baseColor}-300`,
+      bgColor: isDarkMode ? darkBaseColor : `var(--${baseColor}-100, #f3f4f6)`,
+      borderColor: isDarkMode ? `var(--${baseColor}-700, #374151)` : `var(--${baseColor}-300, #d1d5db)`,
+    };
+  };
+
+  const powerAppsColors = getNodeColors('purple', 'rgb(91, 33, 182, 0.2)');
+  const powerAutomateColors = getNodeColors('blue', 'rgb(37, 99, 235, 0.2)');
+  const powerBIColors = getNodeColors('yellow', 'rgb(202, 138, 4, 0.2)');
+  const powerPagesColors = getNodeColors('green', 'rgb(22, 163, 74, 0.2)');
+  const copilotColors = getNodeColors('orange', 'rgb(234, 88, 12, 0.2)');
+  const adminColors = getNodeColors('red', 'rgb(220, 38, 38, 0.2)');
+  const dataverseColors = getNodeColors('indigo', 'rgb(79, 70, 229, 0.2)');
   
   // Define nodes for the Power Platform components
   const initialNodes: Node[] = [
@@ -110,8 +131,10 @@ export function PowerPlatformOverview() {
         id: 'power-apps',
         label: 'Power Apps', 
         shortDescription: 'Low-Code App Development',
-        className: 'bg-purple-100 border border-purple-300',
-        onSelect: setSelectedComponent
+        className: `${!isDarkMode ? 'bg-purple-100 border border-purple-300' : ''}`,
+        onSelect: setSelectedComponent,
+        bgColor: powerAppsColors.bgColor,
+        borderColor: powerAppsColors.borderColor
       }
     },
     {
@@ -122,8 +145,10 @@ export function PowerPlatformOverview() {
         id: 'power-automate',
         label: 'Power Automate', 
         shortDescription: 'Process Automation',
-        className: 'bg-blue-100 border border-blue-300',
-        onSelect: setSelectedComponent
+        className: `${!isDarkMode ? 'bg-blue-100 border border-blue-300' : ''}`,
+        onSelect: setSelectedComponent,
+        bgColor: powerAutomateColors.bgColor,
+        borderColor: powerAutomateColors.borderColor
       }
     },
     {
@@ -134,8 +159,10 @@ export function PowerPlatformOverview() {
         id: 'power-bi',
         label: 'Power BI', 
         shortDescription: 'Business Intelligence',
-        className: 'bg-yellow-100 border border-yellow-300',
-        onSelect: setSelectedComponent
+        className: `${!isDarkMode ? 'bg-yellow-100 border border-yellow-300' : ''}`,
+        onSelect: setSelectedComponent,
+        bgColor: powerBIColors.bgColor,
+        borderColor: powerBIColors.borderColor
       }
     },
     {
@@ -146,8 +173,10 @@ export function PowerPlatformOverview() {
         id: 'power-pages',
         label: 'Power Pages', 
         shortDescription: 'External Websites',
-        className: 'bg-green-100 border border-green-300',
-        onSelect: setSelectedComponent
+        className: `${!isDarkMode ? 'bg-green-100 border border-green-300' : ''}`,
+        onSelect: setSelectedComponent,
+        bgColor: powerPagesColors.bgColor,
+        borderColor: powerPagesColors.borderColor
       }
     },
     {
@@ -158,8 +187,10 @@ export function PowerPlatformOverview() {
         id: 'copilot-studio',
         label: 'Copilot Studio', 
         shortDescription: 'Conversational AI',
-        className: 'bg-orange-100 border border-orange-300',
-        onSelect: setSelectedComponent
+        className: `${!isDarkMode ? 'bg-orange-100 border border-orange-300' : ''}`,
+        onSelect: setSelectedComponent,
+        bgColor: copilotColors.bgColor,
+        borderColor: copilotColors.borderColor
       }
     },
     {
@@ -170,8 +201,10 @@ export function PowerPlatformOverview() {
         id: 'admin-center',
         label: 'Admin Center', 
         shortDescription: 'Governance & Administration',
-        className: 'bg-red-100 border border-red-300',
-        onSelect: setSelectedComponent
+        className: `${!isDarkMode ? 'bg-red-100 border border-red-300' : ''}`,
+        onSelect: setSelectedComponent,
+        bgColor: adminColors.bgColor,
+        borderColor: adminColors.borderColor
       }
     },
     {
@@ -182,8 +215,10 @@ export function PowerPlatformOverview() {
         id: 'dataverse',
         label: 'Dataverse', 
         shortDescription: 'Data Platform',
-        className: 'bg-indigo-100 border border-indigo-300',
-        onSelect: setSelectedComponent
+        className: `${!isDarkMode ? 'bg-indigo-100 border border-indigo-300' : ''}`,
+        onSelect: setSelectedComponent,
+        bgColor: dataverseColors.bgColor,
+        borderColor: dataverseColors.borderColor
       }
     },
   ];
@@ -195,113 +230,106 @@ export function PowerPlatformOverview() {
       source: 'power-apps',
       target: 'power-automate',
       type: 'animated',
-      data: { label: 'Triggers flows', color: '#9333ea' }
+      data: { label: 'Triggers flows', color: '#9333ea', textColor: isDarkMode ? '#d8b4fe' : '#9333ea' }
     },
     {
       id: 'apps-to-pages',
       source: 'power-apps',
       target: 'power-pages',
       type: 'animated',
-      data: { label: 'Embeds in portals', color: '#9333ea' }
+      data: { label: 'Embeds in portals', color: '#9333ea', textColor: isDarkMode ? '#d8b4fe' : '#9333ea' }
     },
     {
       id: 'apps-to-admin',
       source: 'power-apps',
       target: 'admin-center',
       type: 'animated',
-      data: { label: 'Managed by', color: '#9333ea' }
+      data: { label: 'Managed by', color: '#9333ea', textColor: isDarkMode ? '#d8b4fe' : '#9333ea' }
     },
     {
       id: 'apps-to-dataverse',
       source: 'power-apps',
       target: 'dataverse',
       type: 'animated',
-      data: { label: 'Stores data', color: '#9333ea' }
+      data: { label: 'Stores data', color: '#9333ea', textColor: isDarkMode ? '#d8b4fe' : '#9333ea' }
     },
     {
       id: 'automate-to-bi',
       source: 'power-automate',
       target: 'power-bi',
       type: 'animated',
-      data: { label: 'Refreshes data', color: '#3b82f6' }
+      data: { label: 'Refreshes data', color: '#3b82f6', textColor: isDarkMode ? '#93c5fd' : '#3b82f6' }
     },
     {
       id: 'automate-to-admin',
       source: 'power-automate',
       target: 'admin-center',
       type: 'animated',
-      data: { label: 'Governed by', color: '#3b82f6' }
+      data: { label: 'Governed by', color: '#3b82f6', textColor: isDarkMode ? '#93c5fd' : '#3b82f6' }
     },
     {
       id: 'automate-to-dataverse',
       source: 'power-automate',
       target: 'dataverse',
       type: 'animated',
-      data: { label: 'Processes data', color: '#3b82f6' }
+      data: { label: 'Processes data', color: '#3b82f6', textColor: isDarkMode ? '#93c5fd' : '#3b82f6' }
     },
     {
       id: 'pages-to-admin',
       source: 'power-pages',
       target: 'admin-center',
       type: 'animated',
-      data: { label: 'Configured in', color: '#22c55e' }
+      data: { label: 'Configured in', color: '#22c55e', textColor: isDarkMode ? '#86efac' : '#22c55e' }
     },
     {
       id: 'pages-to-dataverse',
       source: 'power-pages',
       target: 'dataverse',
       type: 'animated',
-      data: { label: 'Reads/writes data', color: '#22c55e' }
-    },
-    {
-      id: 'bi-to-dataverse',
-      source: 'power-bi',
-      target: 'dataverse',
-      type: 'animated',
-      data: { label: 'Analyzes data', color: '#eab308' }
+      data: { label: 'Sources data from', color: '#22c55e', textColor: isDarkMode ? '#86efac' : '#22c55e' }
     },
     {
       id: 'bi-to-admin',
       source: 'power-bi',
       target: 'admin-center',
       type: 'animated',
-      data: { label: 'Managed by', color: '#eab308' }
+      data: { label: 'Administered in', color: '#eab308', textColor: isDarkMode ? '#fde047' : '#eab308' }
     },
     {
-      id: 'copilot-to-apps',
-      source: 'copilot-studio',
-      target: 'power-apps',
+      id: 'bi-to-dataverse',
+      source: 'power-bi',
+      target: 'dataverse',
       type: 'animated',
-      data: { label: 'Embedded in', color: '#f97316' }
-    },
-    {
-      id: 'copilot-to-pages',
-      source: 'copilot-studio',
-      target: 'power-pages',
-      type: 'animated',
-      data: { label: 'Integrated with', color: '#f97316' }
+      data: { label: 'Visualizes data', color: '#eab308', textColor: isDarkMode ? '#fde047' : '#eab308' }
     },
     {
       id: 'copilot-to-admin',
       source: 'copilot-studio',
       target: 'admin-center',
       type: 'animated',
-      data: { label: 'Governed by', color: '#f97316' }
+      data: { label: 'Configured in', color: '#f97316', textColor: isDarkMode ? '#fdba74' : '#f97316' }
+    },
+    {
+      id: 'copilot-to-apps',
+      source: 'copilot-studio',
+      target: 'power-apps',
+      type: 'animated',
+      data: { label: 'Embedded in', color: '#f97316', textColor: isDarkMode ? '#fdba74' : '#f97316' }
     },
     {
       id: 'copilot-to-dataverse',
       source: 'copilot-studio',
       target: 'dataverse',
       type: 'animated',
-      data: { label: 'Uses data from', color: '#f97316' }
+      data: { label: 'Uses data from', color: '#f97316', textColor: isDarkMode ? '#fdba74' : '#f97316' }
     },
     {
       id: 'admin-to-dataverse',
       source: 'admin-center',
       target: 'dataverse',
       type: 'animated',
-      data: { label: 'Manages', color: '#ef4444' }
-    },
+      data: { label: 'Manages', color: '#ef4444', textColor: isDarkMode ? '#fca5a5' : '#ef4444' }
+    }
   ];
   
   // Component details for display in the detail panel
@@ -481,10 +509,14 @@ export function PowerPlatformOverview() {
             fitView
           >
             <Controls />
-            <Background />
+            <Background color={isDarkMode ? '#444' : '#aaa'} />
           </ReactFlow>
         </div>
-        <div className="col-span-1 bg-white p-4 rounded-lg border border-gray-200 shadow-sm overflow-y-auto">
+        <div className="col-span-1 p-4 rounded-lg border shadow-sm overflow-y-auto" style={{
+          backgroundColor: isDarkMode ? 'var(--card-bg)' : 'white',
+          borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+          color: isDarkMode ? 'var(--foreground)' : 'inherit'
+        }}>
           <AnimatePresence mode="wait">
             {selectedComponent ? (
               <motion.div
@@ -495,32 +527,33 @@ export function PowerPlatformOverview() {
                 className="component-details"
               >
                 <h3 className="text-xl font-bold mb-3">{componentDetails[selectedComponent].title}</h3>
-                <p className="mb-4 text-gray-700">{componentDetails[selectedComponent].description}</p>
+                <p className="mb-4" style={{ color: isDarkMode ? 'var(--foreground)' : '#374151' }}>{componentDetails[selectedComponent].description}</p>
                 
                 <h4 className="font-bold mb-2 text-blue-600">Kernfunktionen:</h4>
                 <ul className="list-disc pl-5 mb-4">
                   {componentDetails[selectedComponent].capabilities.map((capability, index) => (
-                    <li key={`cap-${index}`} className="mb-1 text-sm">{capability}</li>
+                    <li key={`cap-${index}`} className="mb-1 text-sm" style={{ color: isDarkMode ? 'var(--foreground)' : '#374151' }}>{capability}</li>
                   ))}
                 </ul>
                 
                 <h4 className="font-bold mb-2 text-purple-600">Hauptmerkmale:</h4>
                 <ul className="list-disc pl-5 mb-4">
                   {componentDetails[selectedComponent].keyFeatures.map((feature, index) => (
-                    <li key={`feat-${index}`} className="mb-1 text-sm">{feature}</li>
+                    <li key={`feat-${index}`} className="mb-1 text-sm" style={{ color: isDarkMode ? 'var(--foreground)' : '#374151' }}>{feature}</li>
                   ))}
                 </ul>
                 
                 <h4 className="font-bold mb-2 text-green-600">Geschäftlicher Nutzen:</h4>
                 <ul className="list-disc pl-5">
                   {componentDetails[selectedComponent].businessValue.map((value, index) => (
-                    <li key={`val-${index}`} className="mb-1 text-sm">{value}</li>
+                    <li key={`val-${index}`} className="mb-1 text-sm" style={{ color: isDarkMode ? 'var(--foreground)' : '#374151' }}>{value}</li>
                   ))}
                 </ul>
                 
-                <div className="mt-4 pt-4 border-t border-gray-200">
+                <div className="mt-4 pt-4 border-t" style={{ borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb' }}>
                   <button 
-                    className="text-sm text-blue-600 hover:text-blue-800"
+                    className="text-sm hover:text-blue-800"
+                    style={{ color: 'var(--blue-600)' }}
                     onClick={() => setSelectedComponent(null)}
                   >
                     Zurück zur Übersicht
@@ -535,14 +568,17 @@ export function PowerPlatformOverview() {
                 exit={{ opacity: 0 }}
               >
                 <h3 className="text-lg font-bold mb-3">Microsoft Power Platform</h3>
-                <p className="mb-4 text-gray-700">
+                <p className="mb-4" style={{ color: isDarkMode ? 'var(--foreground)' : '#374151' }}>
                   Die Microsoft Power Platform ist eine Sammlung von Produkten, die Unternehmen beim Erstellen von Lösungen, Automatisieren von Prozessen und Analysieren von Daten unterstützen - mit minimalem Code und maximaler Effizienz.
                 </p>
-                <p className="text-sm text-gray-600 mb-2">
+                <p className="text-sm mb-2" style={{ color: isDarkMode ? 'var(--foreground-muted)' : '#6b7280' }}>
                   Klicken Sie auf eine Komponente im Diagramm, um Details zu sehen.
                 </p>
-                <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 mt-4">
-                  <p className="text-sm font-medium text-blue-700">
+                <div className="p-3 rounded-lg border mt-4" style={{ 
+                  backgroundColor: isDarkMode ? 'rgba(37, 99, 235, 0.1)' : 'rgba(239, 246, 255, 0.8)', 
+                  borderColor: isDarkMode ? 'rgba(37, 99, 235, 0.4)' : 'rgba(191, 219, 254, 0.8)'
+                }}>
+                  <p className="text-sm font-medium" style={{ color: isDarkMode ? '#93c5fd' : '#1e40af' }}>
                     Die Integration aller Komponenten der Power Platform ermöglicht es Unternehmen, Geschäftslösungen schneller, kostengünstiger und mit weniger technischem Aufwand zu erstellen.
                   </p>
                 </div>

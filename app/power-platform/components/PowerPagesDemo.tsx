@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTheme } from '@/lib/themeContext';
 
 interface PageComponent {
   id: string;
@@ -20,6 +21,7 @@ interface Template {
 }
 
 export function PowerPagesDemo() {
+  const { isDarkMode } = useTheme();
   const [activeTab, setActiveTab] = useState<'pages' | 'templates' | 'themes'>('pages');
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [activePage, setActivePage] = useState<string>('home');
@@ -129,6 +131,44 @@ export function PowerPagesDemo() {
       }
     }
   ];
+  
+  const styles = {
+    container: {
+      backgroundColor: isDarkMode ? 'var(--card-bg)' : 'white',
+      borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+      color: isDarkMode ? 'var(--foreground)' : 'inherit',
+    },
+    header: {
+      backgroundColor: isDarkMode ? 'rgba(17, 24, 39, 0.8)' : '#f3f4f6',
+      borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+    },
+    panel: {
+      backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.8)' : 'white',
+      borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+    },
+    content: {
+      backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.6)' : 'white',
+      borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+    },
+    button: {
+      standard: {
+        backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.2)',
+        color: isDarkMode ? 'var(--foreground)' : 'inherit',
+      },
+      primary: {
+        backgroundColor: isDarkMode ? 'rgba(22, 163, 74, 0.8)' : 'white',
+        color: isDarkMode ? 'white' : '#008272',
+      },
+    },
+    text: {
+      muted: {
+        color: isDarkMode ? 'rgba(156, 163, 175, 0.8)' : '#6b7280',
+      },
+      placeholder: {
+        color: isDarkMode ? 'rgba(156, 163, 175, 0.5)' : '#9ca3af',
+      },
+    },
+  };
   
   const renderPreview = () => {
     return (
@@ -363,90 +403,305 @@ export function PowerPagesDemo() {
   };
   
   return (
-    <div className="power-pages-demo border border-gray-200 rounded-lg overflow-hidden">
-      <div className="bg-[#008272] text-white p-2 flex items-center">
-        <div className="mr-2 bg-white text-[#008272] rounded-full h-6 w-6 flex items-center justify-center font-bold">P</div>
-        <span className="font-medium">Power Pages - Kundenservice-Portal</span>
-        <div className="ml-auto flex space-x-2">
-          <button className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-sm text-sm">Vorschau</button>
-          <button className="bg-white text-[#008272] px-3 py-1 rounded-sm text-sm font-medium">Veröffentlichen</button>
+    <div className="power-pages-demo border rounded-lg overflow-hidden" style={styles.container}>
+      <div className="flex items-center justify-between p-3 border-b" style={{ borderColor: styles.container.borderColor }}>
+        <div className="flex items-center">
+          <span className="text-green-600 font-medium">Power Pages</span>
+          <span className="mx-2 text-gray-300">|</span>
+          <span className="text-sm" style={styles.text.muted}>Kundenservice-Portal</span>
         </div>
-      </div>
-      
-      <div className="flex bg-gray-100 border-b border-gray-200 p-2">
         <div className="flex space-x-2">
           <button 
-            className={`py-1 px-3 text-sm rounded ${activeTab === 'pages' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
-            onClick={() => setActiveTab('pages')}
+            className="hover:bg-white/30 px-3 py-1 rounded-sm text-sm"
+            style={styles.button.standard}
           >
-            Seiten
+            Vorschau
           </button>
           <button 
-            className={`py-1 px-3 text-sm rounded ${activeTab === 'templates' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
-            onClick={() => setActiveTab('templates')}
+            className="px-3 py-1 rounded-sm text-sm font-medium"
+            style={styles.button.primary}
           >
-            Vorlagen
-          </button>
-          <button 
-            className={`py-1 px-3 text-sm rounded ${activeTab === 'themes' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
-            onClick={() => setActiveTab('themes')}
-          >
-            Designs
-          </button>
-        </div>
-        
-        <div className="ml-auto flex space-x-2">
-          <button 
-            className={`py-1 px-3 text-sm rounded ${editMode === 'design' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
-            onClick={() => setEditMode('design')}
-          >
-            Design
-          </button>
-          <button 
-            className={`py-1 px-3 text-sm rounded ${editMode === 'content' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
-            onClick={() => setEditMode('content')}
-          >
-            Inhalte
-          </button>
-          <button 
-            className={`py-1 px-3 text-sm rounded ${editMode === 'settings' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
-            onClick={() => setEditMode('settings')}
-          >
-            Einstellungen
+            Veröffentlichen
           </button>
         </div>
       </div>
       
-      <div className="h-[520px] flex">
-        {/* Left sidebar */}
-        <div className="w-64 p-2 bg-gray-50 border-r border-gray-200">
-          {activeTab === 'pages' && renderPagesList()}
-          {activeTab === 'templates' && renderTemplateSelector()}
-          {activeTab === 'themes' && (
-            <div className="text-center p-6 text-gray-500">
-              Design-Optionen werden hier angezeigt
+      <div className="grid grid-cols-12 h-[500px]">
+        <div className="col-span-2 border-r" style={{ borderColor: styles.container.borderColor }}>
+          <div className="p-3 border-b" style={{ borderColor: styles.container.borderColor }}>
+            <h3 className="font-medium text-sm">Seitennavigation</h3>
+          </div>
+          <div className="p-2">
+            <ul className="text-sm space-y-1">
+              {pages.map((page, i) => (
+                <li 
+                  key={i} 
+                  className={`py-1 px-2 rounded cursor-pointer ${activePage === page.id ? 'font-medium' : ''}`}
+                  style={
+                    activePage === page.id 
+                      ? { backgroundColor: isDarkMode ? 'rgba(22, 163, 74, 0.2)' : 'rgba(240, 253, 244, 1)' } 
+                      : {}
+                  }
+                  onClick={() => setActivePage(page.id)}
+                >
+                  {page.name}
+                </li>
+              ))}
+            </ul>
             </div>
-          )}
         </div>
         
-        {/* Main content area */}
-        <div className="flex-1 p-2">
-          {editMode === 'design' && renderPreview()}
-          {editMode === 'content' && (
-            <div className="bg-white h-full p-6 flex items-center justify-center text-gray-500">
-              Inhaltseditor wird hier angezeigt
+        <div className="col-span-7 flex flex-col border-r" style={{ borderColor: styles.container.borderColor }}>
+          <div className="p-3 border-b flex items-center" style={{ borderColor: styles.container.borderColor }}>
+            <div className="flex-1">
+              <input 
+                type="text" 
+                className="w-full p-1 border rounded text-sm"
+                style={{
+                  backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.8)' : 'white',
+                  borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+                  color: isDarkMode ? 'var(--foreground)' : 'inherit',
+                }}
+                value="Kundenservice-Portal" 
+                readOnly
+              />
+            </div>
+            <div className="ml-4 flex space-x-2">
+              <button className="text-sm flex items-center text-blue-600">
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                </svg>
+                Ansicht
+              </button>
+              <button className="text-sm flex items-center text-blue-600">
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                </svg>
+                Komponenten
+              </button>
+            </div>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto p-4">
+            <div className="rounded-md border h-full overflow-y-auto" style={styles.content}>
+              {activePage === 'home' && (
+                <div className="p-4">
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-bold mb-2">Willkommen beim Kundenservice-Portal</h2>
+                    <p className="text-sm" style={styles.text.muted}>Hier finden Sie Hilfe bei allen Fragen zu unseren Produkten und Dienstleistungen.</p>
+                  </div>
+                  
+                  <div className="grid grid-cols-3 gap-4 mb-6">
+                    <div className="p-3 rounded-md border" style={styles.content}>
+                      <h3 className="font-medium mb-2">Supportanfrage stellen</h3>
+                      <p className="text-xs mb-2" style={styles.text.muted}>Erstellen Sie eine neue Supportanfrage und verfolgen Sie den Status.</p>
+                      <button className="bg-green-600 text-white px-3 py-1 text-xs rounded hover:bg-green-700">
+                        Anfrage stellen
+                      </button>
+                    </div>
+                    
+                    <div className="p-3 rounded-md border" style={styles.content}>
+                      <h3 className="font-medium mb-2">Wissensdatenbank</h3>
+                      <p className="text-xs mb-2" style={styles.text.muted}>Durchsuchen Sie unsere Artikel und Lösungen für häufige Probleme.</p>
+                      <button className="bg-blue-600 text-white px-3 py-1 text-xs rounded hover:bg-blue-700">
+                        Artikel anzeigen
+                      </button>
+                    </div>
+                    
+                    <div className="p-3 rounded-md border" style={styles.content}>
+                      <h3 className="font-medium mb-2">Kontaktinformationen</h3>
+                      <p className="text-xs mb-2" style={styles.text.muted}>Finden Sie alternative Kontaktmöglichkeiten für den Support.</p>
+                      <button className="bg-purple-600 text-white px-3 py-1 text-xs rounded hover:bg-purple-700">
+                        Kontakt anzeigen
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {activePage === 'services' && (
+                <div className="p-4">
+                  <h2 className="text-xl font-bold mb-4">Serviceangebote</h2>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="font-medium mb-2">Technischer Support</h3>
+                      <p className="text-xs mb-2" style={styles.text.muted}>Unterstützung bei technischen Problemen mit unseren Produkten</p>
+                    </div>
+                    
+                    <div>
+                      <h3 className="font-medium mb-2">Reparaturservice</h3>
+                      <p className="text-xs mb-2" style={styles.text.muted}>Professionelle Reparatur durch zertifizierte Techniker</p>
+                    </div>
+                    
+                    <div>
+                      <h3 className="font-medium mb-2">Garantieabwicklung</h3>
+                      <p className="text-xs mb-2" style={styles.text.muted}>Schnelle und unkomplizierte Bearbeitung von Garantieansprüchen</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {activePage === 'request' && (
+                <div className="p-4">
+                  <h2 className="text-xl font-bold mb-4">Neue Supportanfrage</h2>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1" style={{ color: isDarkMode ? 'var(--foreground)' : '#374151' }}>
+                        Betreff
+                      </label>
+                      <input 
+                        type="text" 
+                        className="w-full p-2 border rounded"
+                        style={{
+                          backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.8)' : 'white',
+                          borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+                          color: isDarkMode ? 'var(--foreground)' : 'inherit',
+                        }}
+                        placeholder="Kurze Beschreibung Ihres Problems"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium mb-1" style={{ color: isDarkMode ? 'var(--foreground)' : '#374151' }}>
+                        Kategorie
+                      </label>
+                      <select 
+                        className="w-full p-2 border rounded"
+                        style={{
+                          backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.8)' : 'white',
+                          borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+                          color: isDarkMode ? 'var(--foreground)' : 'inherit',
+                        }}
+                      >
+                        <option>Technisches Problem</option>
+                        <option>Kontofrage</option>
+                        <option>Abrechnung</option>
+                        <option>Produktinformation</option>
+                        <option>Sonstiges</option>
+                      </select>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium mb-1" style={{ color: isDarkMode ? 'var(--foreground)' : '#374151' }}>
+                        Beschreibung
+                      </label>
+                      <textarea 
+                        className="w-full p-2 border rounded"
+                        style={{
+                          backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.8)' : 'white',
+                          borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+                          color: isDarkMode ? 'var(--foreground)' : 'inherit',
+                        }}
+                        rows={6}
+                        placeholder="Detaillierte Beschreibung Ihres Problems"
+                      ></textarea>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium mb-1" style={{ color: isDarkMode ? 'var(--foreground)' : '#374151' }}>
+                        Anhänge
+                      </label>
+                      <div 
+                        className="border border-dashed rounded p-4 text-center cursor-pointer"
+                        style={{
+                          borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+                        }}
+                      >
+                        <p className="text-sm" style={styles.text.muted}>Dateien hier ablegen oder klicken zum Auswählen</p>
+                        <p className="text-xs mt-1" style={styles.text.placeholder}>Max. 5 MB pro Datei</p>
+                      </div>
+                    </div>
+                    
+                    <div className="pt-4 flex justify-end space-x-3">
+                      <button className="px-4 py-2 rounded text-sm border" style={styles.content}>
+                        Abbrechen
+                      </button>
+                      <button className="px-4 py-2 rounded text-sm bg-green-600 text-white hover:bg-green-700">
+                        Anfrage einreichen
+                      </button>
+                    </div>
+                  </div>
             </div>
           )}
-          {editMode === 'settings' && (
-            <div className="bg-white h-full p-6 flex items-center justify-center text-gray-500">
-              Seiteneinstellungen werden hier angezeigt
             </div>
-          )}
+          </div>
         </div>
         
-        {/* Right sidebar */}
-        <div className="w-64 p-2 bg-gray-50 border-l border-gray-200">
-          {renderComponentsList()}
+        <div className="col-span-3 h-full flex flex-col">
+          <div className="p-3 border-b" style={{ borderColor: styles.container.borderColor }}>
+            <h3 className="font-medium text-sm">Websiteeigenschaften</h3>
+          </div>
+          
+          <div className="p-3 border-b" style={{ borderColor: styles.container.borderColor }}>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium mb-1" style={{ color: isDarkMode ? 'var(--foreground)' : '#374151' }}>
+                  Sprachauswahl
+                </label>
+                <select 
+                  className="w-full p-1 border rounded text-sm"
+                  style={{
+                    backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.8)' : 'white',
+                    borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+                    color: isDarkMode ? 'var(--foreground)' : 'inherit',
+                  }}
+                >
+                  <option>Deutsch (DE)</option>
+                  <option>English (US)</option>
+                  <option>Français (FR)</option>
+                  <option>Español (ES)</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-xs font-medium mb-1" style={{ color: isDarkMode ? 'var(--foreground)' : '#374151' }}>
+                  Seitenvorlage
+                </label>
+                <select 
+                  className="w-full p-1 border rounded text-sm"
+                  style={{
+                    backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.8)' : 'white',
+                    borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+                    color: isDarkMode ? 'var(--foreground)' : 'inherit',
+                  }}
+                >
+                  <option>Kundenportal</option>
+                  <option>Informationsseite</option>
+                  <option>Dateneingabe</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <div className="overflow-y-auto flex-1">
+            <div className="p-3">
+              <h4 className="font-medium text-xs mb-3">Komponenten</h4>
+              
+              <div className="space-y-2">
+                {pageComponents.map((component, i) => (
+                  <div 
+                    key={i} 
+                    className="p-2 rounded border cursor-pointer"
+                    style={styles.content}
+                  >
+                    <div className="font-medium text-xs">{component.title}</div>
+                    <div className="text-xs" style={styles.text.muted}>{component.type}</div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="mt-4">
+                <button className="text-sm text-blue-600 flex items-center">
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  Komponente hinzufügen
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

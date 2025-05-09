@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTheme } from '@/lib/themeContext';
 
 type VisualizationType = 'bar' | 'line' | 'pie' | 'kpi' | 'table';
 
@@ -17,12 +18,19 @@ interface Visualization {
 interface Filter {
   id: string;
   name: string;
-  type: 'dropdown' | 'daterange' | 'slider';
+  type: 'select' | 'date-range';
   options?: string[];
-  value: any;
+  value?: any;
+}
+
+interface Metric {
+  name: string;
+  value: string;
+  trend: number;
 }
 
 export function PowerBIDemo() {
+  const { isDarkMode } = useTheme();
   const [visualizations, setVisualizations] = useState<Visualization[]>([
     {
       id: 'v1',
@@ -110,29 +118,100 @@ export function PowerBIDemo() {
   
   const [filters, setFilters] = useState<Filter[]>([
     {
-      id: 'f1',
+      id: 'date',
       name: 'Zeitraum',
-      type: 'daterange',
-      value: { start: '01.01.2023', end: '30.06.2023' }
+      type: 'date-range',
+      value: { start: '01.01.2023', end: '31.03.2023' }
     },
     {
-      id: 'f2',
+      id: 'product',
       name: 'Produktkategorie',
-      type: 'dropdown',
-      options: ['Alle', 'Fahrzeugteile', 'Elektronik', 'Innenausstattung', 'Zubehör', 'Service'],
-      value: 'Alle'
+      type: 'select',
+      options: ['Alle', 'Elektronik', 'Möbel', 'Kleidung', 'Lebensmittel']
     },
     {
-      id: 'f3',
+      id: 'region',
       name: 'Region',
-      type: 'dropdown',
-      options: ['Alle', 'Nord', 'Süd', 'Ost', 'West', 'Zentral'],
-      value: 'Alle'
-    }
+      type: 'select',
+      options: ['Alle', 'Nord', 'Süd', 'Ost', 'West']
+    },
+    {
+      id: 'channel',
+      name: 'Vertriebskanal',
+      type: 'select',
+      options: ['Alle', 'Online', 'Stationär', 'Partner']
+    },
   ]);
   
   const [activeTab, setActiveTab] = useState<'report' | 'data' | 'model'>('report');
   const [selectedViz, setSelectedViz] = useState<string | null>(null);
+  
+  // Define metrics array
+  const metrics = [
+    {
+      name: 'Gesamtumsatz',
+      value: '1.35M €',
+      trend: 12.5
+    },
+    {
+      name: 'Durchschn. Bestellwert',
+      value: '418 €',
+      trend: 8.3
+    },
+    {
+      name: 'Konversionsrate',
+      value: '4.2%',
+      trend: -1.5
+    }
+  ];
+  
+  const styles = {
+    container: {
+      backgroundColor: isDarkMode ? 'var(--card-bg)' : 'white',
+      borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+      color: isDarkMode ? 'var(--foreground)' : 'inherit',
+    },
+    header: {
+      backgroundColor: isDarkMode ? 'rgba(249, 171, 0, 0.9)' : '#F2C811',
+      color: isDarkMode ? '#111827' : 'black',
+      borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+    },
+    button: {
+      standard: {
+        backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)',
+        color: isDarkMode ? 'white' : 'black',
+      },
+      primary: {
+        backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.3)' : 'white',
+        color: isDarkMode ? 'white' : 'black',
+      },
+    },
+    panel: {
+      backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.8)' : '#f9fafb',
+      borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+    },
+    chart: {
+      backgroundColor: isDarkMode ? 'rgba(17, 24, 39, 0.6)' : 'white',
+      borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+      gridColor: isDarkMode ? 'rgba(75, 85, 99, 0.4)' : '#f3f4f6',
+      textColor: isDarkMode ? 'rgba(229, 231, 235, 0.8)' : '#374151',
+    },
+    input: {
+      backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.8)' : 'white',
+      borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+      color: isDarkMode ? 'var(--foreground)' : '#374151',
+    },
+    text: {
+      muted: {
+        color: isDarkMode ? 'rgba(156, 163, 175, 0.8)' : '#6b7280',
+      },
+    },
+    metricCard: {
+      borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+      backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.6)' : 'white',
+      boxShadow: isDarkMode ? 'none' : '0 1px 3px rgba(0,0,0,0.1)',
+    },
+  };
   
   const renderBarChart = (viz: Visualization) => {
     const { categories, values } = viz.data;
@@ -170,7 +249,7 @@ export function PowerBIDemo() {
         
         {/* Y-axis labels */}
         <div className="flex flex-1 mt-1">
-          <div className="flex flex-col justify-between pr-2 text-[10px] text-gray-500">
+          <div className="flex flex-col justify-between pr-2 text-[10px] text-gray-500" style={{ color: isDarkMode ? 'rgba(156, 163, 175, 0.8)' : '#6b7280' }}>
             <div>{formatCurrency(maxValue)}</div>
             <div>{formatCurrency(maxValue * 0.75)}</div>
             <div>{formatCurrency(maxValue * 0.5)}</div>
@@ -182,11 +261,11 @@ export function PowerBIDemo() {
           <div className="relative flex-1">
             {/* Grid lines */}
             <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
-              <div className="h-px bg-gray-200 w-full"></div>
-              <div className="h-px bg-gray-200 w-full"></div>
-              <div className="h-px bg-gray-200 w-full"></div>
-              <div className="h-px bg-gray-200 w-full"></div>
-              <div className="h-px bg-gray-200 w-full"></div>
+              <div className="h-px w-full" style={{ backgroundColor: isDarkMode ? 'rgba(75, 85, 99, 0.4)' : '#f3f4f6' }}></div>
+              <div className="h-px w-full" style={{ backgroundColor: isDarkMode ? 'rgba(75, 85, 99, 0.4)' : '#f3f4f6' }}></div>
+              <div className="h-px w-full" style={{ backgroundColor: isDarkMode ? 'rgba(75, 85, 99, 0.4)' : '#f3f4f6' }}></div>
+              <div className="h-px w-full" style={{ backgroundColor: isDarkMode ? 'rgba(75, 85, 99, 0.4)' : '#f3f4f6' }}></div>
+              <div className="h-px w-full" style={{ backgroundColor: isDarkMode ? 'rgba(75, 85, 99, 0.4)' : '#f3f4f6' }}></div>
             </div>
             
             {/* Actual bars */}
@@ -210,7 +289,7 @@ export function PowerBIDemo() {
                         </div>
                       </div>
                     </div>
-                    <div className="text-xs mt-1 truncate w-full text-center font-medium text-gray-600" style={{ fontSize: '0.7rem' }}>{category}</div>
+                    <div className="text-xs mt-1 truncate w-full text-center font-medium" style={{ fontSize: '0.7rem', color: isDarkMode ? 'rgba(209, 213, 219, 0.9)' : '#4b5563' }}>{category}</div>
                   </div>
                 );
               })}
@@ -266,7 +345,7 @@ export function PowerBIDemo() {
         
         <div className="flex flex-1 mt-1">
           {/* Y-axis labels */}
-          <div className="flex flex-col justify-between pr-2 text-[10px] text-gray-500">
+          <div className="flex flex-col justify-between pr-2 text-[10px]" style={{ color: isDarkMode ? 'rgba(156, 163, 175, 0.8)' : '#6b7280' }}>
             <div>{formatCurrency(maxValue)}</div>
             <div>{formatCurrency(maxValue * 0.75)}</div>
             <div>{formatCurrency(maxValue * 0.5)}</div>
@@ -277,11 +356,11 @@ export function PowerBIDemo() {
           <div className="relative flex-1">
             {/* Grid lines */}
             <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
-              <div className="h-px bg-gray-200 w-full"></div>
-              <div className="h-px bg-gray-200 w-full"></div>
-              <div className="h-px bg-gray-200 w-full"></div>
-              <div className="h-px bg-gray-200 w-full"></div>
-              <div className="h-px bg-gray-200 w-full"></div>
+              <div className="h-px w-full" style={{ backgroundColor: isDarkMode ? 'rgba(75, 85, 99, 0.4)' : '#f3f4f6' }}></div>
+              <div className="h-px w-full" style={{ backgroundColor: isDarkMode ? 'rgba(75, 85, 99, 0.4)' : '#f3f4f6' }}></div>
+              <div className="h-px w-full" style={{ backgroundColor: isDarkMode ? 'rgba(75, 85, 99, 0.4)' : '#f3f4f6' }}></div>
+              <div className="h-px w-full" style={{ backgroundColor: isDarkMode ? 'rgba(75, 85, 99, 0.4)' : '#f3f4f6' }}></div>
+              <div className="h-px w-full" style={{ backgroundColor: isDarkMode ? 'rgba(75, 85, 99, 0.4)' : '#f3f4f6' }}></div>
             </div>
             
             {/* Enhanced line chart visualization */}
@@ -291,7 +370,7 @@ export function PowerBIDemo() {
                 <polyline
                   points={calculatePoints(series[0].values)}
                   fill="none"
-                  stroke="#0078D4"
+                  stroke={isDarkMode ? "#60a5fa" : "#0078D4"}
                   strokeWidth="2.5"
                   strokeLinejoin="round"
                   className="filter drop-shadow-sm"
@@ -301,7 +380,7 @@ export function PowerBIDemo() {
                 <polyline
                   points={calculatePoints(series[1].values)}
                   fill="none"
-                  stroke="#777777"
+                  stroke={isDarkMode ? "#9ca3af" : "#777777"}
                   strokeWidth="2"
                   strokeDasharray="3,3"
                   strokeLinejoin="round"
@@ -317,8 +396,8 @@ export function PowerBIDemo() {
                       cx={x} 
                       cy={y} 
                       r="2.5" 
-                      fill="#0078D4" 
-                      stroke="white" 
+                      fill={isDarkMode ? "#60a5fa" : "#0078D4"} 
+                      stroke={isDarkMode ? "#1f2937" : "white"} 
                       strokeWidth="1.5"
                     />
                   );
@@ -329,7 +408,7 @@ export function PowerBIDemo() {
             {/* X-axis labels */}
             <div className="absolute bottom-0 w-full flex justify-between px-2">
               {categories.map((cat: string) => (
-                <div key={cat} className="text-center text-xs text-gray-600 font-medium">{cat}</div>
+                <div key={cat} className="text-center text-xs font-medium" style={{ color: isDarkMode ? 'rgba(209, 213, 219, 0.9)' : '#4b5563' }}>{cat}</div>
               ))}
             </div>
           </div>
@@ -340,10 +419,10 @@ export function PowerBIDemo() {
           {series.map((s: any) => (
             <div key={s.name} className="flex items-center text-xs">
               <div 
-                className={`w-3 h-1.5 mr-1 ${s.name === '2023' ? 'bg-blue-500' : 'bg-gray-500'}`}
-                style={s.name === '2022' ? { borderTop: '1px dashed #777' } : {}}
+                className={`w-3 h-1.5 mr-1 ${s.name === '2023' ? (isDarkMode ? 'bg-blue-400' : 'bg-blue-500') : (isDarkMode ? 'bg-gray-400' : 'bg-gray-500')}`}
+                style={s.name === '2022' ? { borderTop: `1px dashed ${isDarkMode ? '#9ca3af' : '#777'}` } : {}}
               ></div>
-              <span className="text-gray-600">{s.name}</span>
+              <span style={{ color: isDarkMode ? 'rgba(209, 213, 219, 0.9)' : '#4b5563' }}>{s.name}</span>
             </div>
           ))}
         </div>
@@ -368,8 +447,8 @@ export function PowerBIDemo() {
     
     return (
       <div className="flex flex-col h-full justify-center items-center p-2">
-        <h3 className="font-medium text-sm mb-1 text-gray-700">{viz.title}</h3>
-        <div className="text-3xl font-bold text-gray-900">
+        <h3 className="font-medium text-sm mb-1" style={{ color: isDarkMode ? 'var(--foreground)' : '#4b5563' }}>{viz.title}</h3>
+        <div className="text-3xl font-bold" style={{ color: isDarkMode ? 'var(--foreground)' : '#111827' }}>
           {formatCurrency(value).replace('€', '').trim()}
           <span className="text-sm ml-1 font-normal">€</span>
         </div>
@@ -382,18 +461,18 @@ export function PowerBIDemo() {
             <span>{trend}%</span>
           </div>
           
-          <div className="text-xs text-gray-500">vs. Vorjahr</div>
+          <div className="text-xs" style={{ color: isDarkMode ? 'rgba(156, 163, 175, 0.8)' : '#6b7280' }}>vs. Vorjahr</div>
         </div>
         
         {/* Progress bar showing actual vs target */}
         <div className="mt-3 w-full px-2">
-          <div className="flex justify-between text-xs text-gray-600 mb-1">
-            <span>Ziel: {formatCurrency(target)}</span>
-            <span>{percentage}%</span>
+          <div className="flex justify-between text-xs mb-1">
+            <span style={{ color: isDarkMode ? 'rgba(209, 213, 219, 0.9)' : '#4b5563' }}>Ziel: {formatCurrency(target)}</span>
+            <span style={{ color: isDarkMode ? 'rgba(209, 213, 219, 0.9)' : '#4b5563' }}>{percentage}%</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full rounded-full h-2" style={{ backgroundColor: isDarkMode ? 'rgba(55, 65, 81, 0.5)' : '#e5e7eb' }}>
             <div 
-              className={`h-2 rounded-full ${Number(percentage) >= 100 ? 'bg-green-500' : 'bg-blue-500'}`}
+              className={`h-2 rounded-full ${Number(percentage) >= 100 ? (isDarkMode ? 'bg-green-500' : 'bg-green-500') : (isDarkMode ? 'bg-blue-500' : 'bg-blue-500')}`}
               style={{ width: `${Math.min(Number(percentage), 100)}%` }}
             ></div>
           </div>
@@ -492,13 +571,13 @@ export function PowerBIDemo() {
                     key={i}
                     d={segment.path}
                     fill={segment.color}
-                    stroke="white"
+                    stroke={isDarkMode ? "rgba(31, 41, 55, 0.6)" : "white"}
                     strokeWidth="1"
                     className="hover:opacity-90 transition-opacity cursor-pointer"
                   />
                 ))}
                 {/* Optional inner circle to create a donut chart */}
-                <circle cx="50" cy="50" r="15" fill="white" />
+                <circle cx="50" cy="50" r="15" fill={isDarkMode ? "rgba(31, 41, 55, 0.6)" : "white"} />
               </svg>
             </div>
           </div>
@@ -510,10 +589,10 @@ export function PowerBIDemo() {
                 <div key={category} className="flex items-center text-xs">
                   <div className="w-3 h-3 rounded-sm mr-2" style={{ backgroundColor: colors[index % colors.length] }}></div>
                   <div className="flex flex-col">
-                    <span className="font-medium text-gray-700">{category}</span>
+                    <span className="font-medium" style={{ color: isDarkMode ? 'var(--foreground)' : '#4b5563' }}>{category}</span>
                     <div className="flex items-baseline space-x-1">
-                      <span className="text-gray-600">{formatCurrency(values[index])}</span>
-                      <span className="text-gray-400 text-[10px]">({percentages[index]}%)</span>
+                      <span style={{ color: isDarkMode ? 'rgba(209, 213, 219, 0.9)' : '#6b7280' }}>{formatCurrency(values[index])}</span>
+                      <span style={{ color: isDarkMode ? 'rgba(156, 163, 175, 0.8)' : '#9ca3af' }} className="text-[10px]">({percentages[index]}%)</span>
                     </div>
                   </div>
                 </div>
@@ -545,9 +624,17 @@ export function PowerBIDemo() {
           <div className="overflow-y-auto h-full">
             <table className="w-full text-xs border-collapse">
               <thead>
-                <tr className="bg-gray-50">
+                <tr style={{ backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.6)' : '#f9fafb' }}>
                   {columns.map((column: string, idx: number) => (
-                    <th key={column} className="px-2 py-1.5 text-left font-medium text-gray-600 border-b border-gray-300 sticky top-0 bg-gray-50 z-10 select-none">
+                    <th 
+                      key={column} 
+                      className="px-2 py-1.5 text-left font-medium border-b sticky top-0 z-10 select-none"
+                      style={{ 
+                        color: isDarkMode ? 'rgba(229, 231, 235, 0.9)' : '#4b5563',
+                        borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.4)' : '#e5e7eb',
+                        backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.6)' : '#f9fafb'
+                      }}
+                    >
                       <div className="flex items-center">
                         <span>{column}</span>
                         {idx > 0 && (
@@ -565,15 +652,31 @@ export function PowerBIDemo() {
                 {rows.map((row: any, rowIndex: number) => (
                   <tr 
                     key={rowIndex} 
-                    className={`${rowIndex % 2 === 1 ? 'bg-gray-50' : 'bg-white'} hover:bg-blue-50 transition-colors cursor-pointer`}
+                    style={{ 
+                      backgroundColor: rowIndex % 2 === 1 
+                        ? (isDarkMode ? 'rgba(31, 41, 55, 0.3)' : '#f9fafb') 
+                        : (isDarkMode ? 'transparent' : 'white')
+                    }}
+                    className={`hover:${isDarkMode ? 'bg-blue-900/20' : 'bg-blue-50'} transition-colors cursor-pointer`}
                   >
                     {row.map((cell: any, cellIndex: number) => (
                       <td 
                         key={cellIndex} 
-                        className={`px-2 py-1.5 border-b border-gray-200 ${cellIndex === 0 ? 'font-medium' : ''}`}
+                        className={`px-2 py-1.5 border-b ${cellIndex === 0 ? 'font-medium' : ''}`}
+                        style={{ 
+                          borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.4)' : '#e5e7eb',
+                          color: isDarkMode ? 'var(--foreground)' : 'inherit'
+                        }}
                       >
                         {cellIndex === 3 ? (
-                          <span className={`px-1.5 py-0.5 rounded-full text-xs ${cell.startsWith('+') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                          <span className={`px-1.5 py-0.5 rounded-full text-xs ${cell.startsWith('+') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`} style={{
+                            backgroundColor: cell.startsWith('+') 
+                              ? (isDarkMode ? 'rgba(5, 150, 105, 0.2)' : '#d1fae5') 
+                              : (isDarkMode ? 'rgba(220, 38, 38, 0.2)' : '#fee2e2'),
+                            color: cell.startsWith('+') 
+                              ? (isDarkMode ? '#34d399' : '#065f46') 
+                              : (isDarkMode ? '#f87171' : '#991b1b')
+                          }}>
                             {cell}
                           </span>
                         ) : cell}
@@ -586,15 +689,21 @@ export function PowerBIDemo() {
           </div>
         </div>
         
-        <div className="flex justify-between items-center mt-2 px-1 text-xs text-gray-500">
+        <div className="flex justify-between items-center mt-2 px-1 text-xs" style={{ color: isDarkMode ? 'rgba(156, 163, 175, 0.8)' : '#6b7280' }}>
           <div>Anzeige 1-{rows.length} von {rows.length}</div>
           <div className="flex space-x-1">
-            <button className="px-1.5 py-1 rounded hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent" disabled>
+            <button 
+              className={`px-1.5 py-1 rounded ${isDarkMode ? 'hover:bg-gray-700/30' : 'hover:bg-gray-100'} disabled:opacity-30 disabled:hover:bg-transparent`} 
+              disabled
+            >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <button className="px-1.5 py-1 rounded hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent" disabled>
+            <button 
+              className={`px-1.5 py-1 rounded ${isDarkMode ? 'hover:bg-gray-700/30' : 'hover:bg-gray-100'} disabled:opacity-30 disabled:hover:bg-transparent`} 
+              disabled
+            >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
@@ -623,118 +732,476 @@ export function PowerBIDemo() {
   };
   
   return (
-    <div className="power-bi-demo border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
-      <div className="bg-[#F2C811] text-black p-2 flex items-center">
-        <div className="mr-2 bg-white text-[#F2C811] rounded-full h-6 w-6 flex items-center justify-center font-bold">P</div>
-        <span className="font-medium">Power BI - Vertriebsleistungsanalyse</span>
-        <div className="ml-auto flex space-x-2">
-          <button className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-sm text-sm flex items-center">
-            <svg className="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <div className="power-bi-demo border rounded-lg overflow-hidden" style={styles.container}>
+      {/* Header */}
+      <div className="h-12 flex items-center justify-between px-4" style={styles.header}>
+        <div className="flex items-center">
+          <span className="font-bold text-lg mr-1">Power BI</span>
+          <span className="text-sm opacity-80">| Vertriebsleistungsanalyse</span>
+        </div>
+        <div className="flex space-x-2">
+          <button 
+            style={styles.button.standard}
+            className="hover:bg-white/30 px-3 py-1 rounded text-sm flex items-center"
+          >
+            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+            Export
+          </button>
+          <button 
+            style={styles.button.primary}
+            className="px-3 py-1 rounded text-sm font-medium flex items-center"
+          >
+            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            Refresh
-          </button>
-          <button className="bg-white px-3 py-1 rounded-sm text-sm font-medium text-black flex items-center">
-            <svg className="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-            </svg>
-            Teilen
+            Aktualisieren
           </button>
         </div>
       </div>
       
-      <div className="bg-gray-50 px-3 py-2 border-b border-gray-200 flex items-center justify-between">
-        <div className="flex space-x-4 text-sm">
-          <button 
-            className={`py-1 px-3 ${activeTab === 'report' ? 'bg-white shadow-sm rounded font-medium' : 'hover:bg-gray-100 rounded text-gray-700'} transition-colors`}
-            onClick={() => setActiveTab('report')}
-          >
-            Bericht
-          </button>
-          <button 
-            className={`py-1 px-3 ${activeTab === 'data' ? 'bg-white shadow-sm rounded font-medium' : 'hover:bg-gray-100 rounded text-gray-700'} transition-colors`}
-            onClick={() => setActiveTab('data')}
-          >
-            Daten
-          </button>
-          <button 
-            className={`py-1 px-3 ${activeTab === 'model' ? 'bg-white shadow-sm rounded font-medium' : 'hover:bg-gray-100 rounded text-gray-700'} transition-colors`}
-            onClick={() => setActiveTab('model')}
-          >
-            Modell
-          </button>
-        </div>
-        
-        <div className="flex items-center">
-          <button className="p-1 rounded-sm hover:bg-gray-200">
-            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </button>
+      {/* Dashboard toolbar */}
+      <div className="border-b border-t h-10 flex items-center px-4" style={{
+        borderColor: styles.container.borderColor,
+        backgroundColor: isDarkMode ? 'rgba(17, 24, 39, 0.6)' : '#f9fafb',
+      }}>
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center">
+            <span className="text-sm mr-2" style={styles.text.muted}>Dashboard:</span>
+            <select className="text-sm border rounded px-2 py-1" style={styles.input}>
+              <option>Vertriebsleistung</option>
+              <option>Produktanalyse</option>
+              <option>Kundenübersicht</option>
+            </select>
+          </div>
+          <div className="flex items-center">
+            <span className="text-sm mr-2" style={styles.text.muted}>Zeitraum:</span>
+            <div className="flex items-center text-sm">
+              <span className="border rounded px-2 py-1" style={styles.input}>
+                01.01.2023
+              </span>
+              <span className="mx-2">-</span>
+              <span className="border rounded px-2 py-1" style={styles.input}>
+                31.03.2023
+              </span>
+            </div>
+          </div>
         </div>
       </div>
       
-      <div className="px-3 py-2 border-b border-gray-200 bg-white">
-        <div className="flex flex-wrap items-center gap-3">
-          {filters.map(filter => (
-            <div key={filter.id} className="inline-flex items-center">
-              <span className="text-xs font-medium mr-1.5 text-gray-600">{filter.name}:</span>
-              {filter.type === 'dropdown' && (
-                <select className="bg-white border border-gray-300 text-xs rounded px-2 py-1 text-gray-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
-                  {filter.options?.map((option: string) => (
-                    <option key={option} value={option}>{option}</option>
+      {/* Main dashboard content */}
+      <div className="grid grid-cols-12 h-[540px]">
+        {/* Left sidebar - filters */}
+        <div className="col-span-2 border-r p-4 overflow-y-auto" style={{ borderColor: styles.container.borderColor, backgroundColor: isDarkMode ? 'rgba(17, 24, 39, 0.5)' : '#f9fafb' }}>
+          <h3 className="font-bold text-base mb-4">Filter</h3>
+          
+          {filters.map((filter, i) => (
+            <div key={i} className="mb-4">
+              <label className="block text-sm font-medium mb-1" style={{ color: isDarkMode ? 'var(--foreground)' : '#374151' }}>
+                {filter.name}
+              </label>
+              
+              {filter.type === 'select' && (
+                <select 
+                  className="border rounded px-2 py-1 text-xs outline-none w-full"
+                  style={styles.input}
+                >
+                  {filter.options?.map((option, j) => (
+                    <option key={j}>{option}</option>
                   ))}
                 </select>
               )}
-              {filter.type === 'daterange' && (
-                <div className="flex items-center text-xs">
-                  <span className="bg-white border border-gray-300 rounded px-2 py-1 text-gray-700">{filter.value.start}</span>
-                  <span className="mx-1 text-gray-500">-</span>
-                  <span className="bg-white border border-gray-300 rounded px-2 py-1 text-gray-700">{filter.value.end}</span>
+              
+              {filter.type === 'date-range' && (
+                <div className="flex flex-col space-y-2 text-xs">
+                  <div className="flex items-center">
+                    <span className="w-10 text-xs" style={styles.text.muted}>Von:</span>
+                    <span 
+                      className="border rounded px-2 py-1 flex-1"
+                      style={styles.input}
+                    >
+                      {filter.value.start}
+                    </span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="w-10 text-xs" style={styles.text.muted}>Bis:</span>
+                    <span 
+                      className="border rounded px-2 py-1 flex-1"
+                      style={styles.input}
+                    >
+                      {filter.value.end}
+                    </span>
+                  </div>
                 </div>
               )}
             </div>
           ))}
           
-          <button className="ml-auto text-blue-600 hover:text-blue-800 text-xs font-medium flex items-center">
-            <svg className="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <button className="w-full mt-2 py-1 text-sm flex justify-center items-center" style={{
+            color: isDarkMode ? '#60a5fa' : '#2563eb',
+            backgroundColor: isDarkMode ? 'rgba(37, 99, 235, 0.1)' : 'rgba(239, 246, 255, 0.8)',
+            borderRadius: '0.25rem',
+          }}>
+            <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
             Filter hinzufügen
           </button>
         </div>
-      </div>
-      
-      <div className="dashboard-grid p-4 bg-gray-100 h-[450px] overflow-y-auto">
-        <div className="grid grid-cols-12 gap-4 auto-rows-[minmax(120px,auto)]">
-          {visualizations.map((viz: Visualization) => {
-            const { x, y, w, h } = viz.position;
-            const isSelected = selectedViz === viz.id;
-            
-            return (
-              <motion.div 
-                key={viz.id}
-                className={`col-span-${w} row-span-${h} bg-white rounded-lg shadow-sm overflow-hidden ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
-                style={{ gridColumnStart: x + 1, gridRowStart: y + 1 }}
-                onClick={() => setSelectedViz(viz.id)}
-                whileHover={{ scale: 1.01, boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)" }}
-                transition={{ duration: 0.2 }}
-              >
-                <div className="p-3 h-full">
-                  {renderVisualization(viz)}
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
         
-        <div className="mt-4 text-center">
-          <button className="px-4 py-2 border border-dashed border-gray-300 rounded-md text-sm text-gray-500 hover:bg-gray-50 flex items-center mx-auto">
-            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            Visualisierung hinzufügen
-          </button>
+        {/* Main content - charts and metrics */}
+        <div className="col-span-10 p-5 overflow-y-auto">
+          {/* Key metrics */}
+          <div className="grid grid-cols-3 gap-5 mb-6">
+            {metrics.map((metric, i) => (
+              <div 
+                key={i}
+                className="p-4 rounded-lg border"
+                style={styles.metricCard}
+              >
+                <h4 className="text-sm font-medium mb-1" style={styles.text.muted}>{metric.name}</h4>
+                <div className="flex items-end">
+                  <span className="text-2xl font-bold">{metric.value}</span>
+                  <span 
+                    className={`ml-2 text-xs flex items-center ${
+                      metric.trend > 0 ? 'text-green-500' : metric.trend < 0 ? 'text-red-500' : 'text-gray-500'
+                    }`}
+                  >
+                    {metric.trend > 0 ? (
+                      <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                      </svg>
+                    ) : metric.trend < 0 ? (
+                      <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                      </svg>
+                    ) : null}
+                    {Math.abs(metric.trend)}%
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Charts */}
+          <div className="grid grid-cols-2 gap-5">
+            {/* Bar chart */}
+            <div 
+              className="border rounded-lg p-4 h-[390px]"
+              style={styles.chart}
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-medium">Umsatz nach Produktkategorie</h3>
+                <div className="flex text-xs space-x-1">
+                  <button className="p-1 rounded" style={{
+                    backgroundColor: isDarkMode ? 'rgba(55, 65, 81, 0.5)' : '#f3f4f6',
+                    color: isDarkMode ? 'rgba(209, 213, 219, 0.9)' : '#4b5563'
+                  }}>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+                    </svg>
+                  </button>
+                  <button className="p-1 rounded" style={{
+                    backgroundColor: isDarkMode ? 'rgba(55, 65, 81, 0.5)' : '#f3f4f6',
+                    color: isDarkMode ? 'rgba(209, 213, 219, 0.9)' : '#4b5563'
+                  }}>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div className="h-[320px] relative">
+                {/* Bar chart visualization */}
+                <div className="absolute bottom-0 left-0 right-0 top-0">
+                  <div className="flex items-end h-full relative">
+                    <div className="absolute inset-0 flex flex-col justify-between">
+                      {[0, 1, 2, 3, 4].map((i) => (
+                        <div 
+                          key={i} 
+                          className="border-b border-dashed h-0 relative" 
+                          style={{
+                            borderColor: styles.chart.gridColor
+                          }}
+                        >
+                          <span 
+                            className="absolute -top-2.5 -left-8 text-[10px]"
+                            style={{ color: styles.chart.textColor }}
+                          >
+                            {(5 - i) * 20}K €
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {/* Static bar chart data instead of using visualizations */}
+                    <div className="flex-1 flex flex-col justify-end items-center mx-3">
+                      <div 
+                        className="w-full bg-blue-500 rounded-t transition-all duration-500 hover:opacity-80"
+                        style={{
+                          height: '80%',
+                          opacity: isDarkMode ? 0.8 : 1
+                        }}
+                      />
+                      <div className="mt-2 text-center">
+                        <span 
+                          className="block text-xs mb-1"
+                          style={{ color: styles.chart.textColor }}
+                        >
+                          Fahrzeugteile
+                        </span>
+                        <span className="block text-xs font-medium">
+                          80K €
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex-1 flex flex-col justify-end items-center mx-3">
+                      <div 
+                        className="w-full bg-blue-600 rounded-t transition-all duration-500 hover:opacity-80"
+                        style={{
+                          height: '65%',
+                          opacity: isDarkMode ? 0.8 : 1
+                        }}
+                      />
+                      <div className="mt-2 text-center">
+                        <span 
+                          className="block text-xs mb-1"
+                          style={{ color: styles.chart.textColor }}
+                        >
+                          Elektronik
+                        </span>
+                        <span className="block text-xs font-medium">
+                          65K €
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex-1 flex flex-col justify-end items-center mx-3">
+                      <div 
+                        className="w-full bg-blue-700 rounded-t transition-all duration-500 hover:opacity-80"
+                        style={{
+                          height: '55%',
+                          opacity: isDarkMode ? 0.8 : 1
+                        }}
+                      />
+                      <div className="mt-2 text-center">
+                        <span 
+                          className="block text-xs mb-1"
+                          style={{ color: styles.chart.textColor }}
+                        >
+                          Innenausstattung
+                        </span>
+                        <span className="block text-xs font-medium">
+                          55K €
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex-1 flex flex-col justify-end items-center mx-3">
+                      <div 
+                        className="w-full bg-blue-800 rounded-t transition-all duration-500 hover:opacity-80"
+                        style={{
+                          height: '40%',
+                          opacity: isDarkMode ? 0.8 : 1
+                        }}
+                      />
+                      <div className="mt-2 text-center">
+                        <span 
+                          className="block text-xs mb-1"
+                          style={{ color: styles.chart.textColor }}
+                        >
+                          Zubehör
+                        </span>
+                        <span className="block text-xs font-medium">
+                          40K €
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex-1 flex flex-col justify-end items-center mx-3">
+                      <div 
+                        className="w-full bg-blue-900 rounded-t transition-all duration-500 hover:opacity-80"
+                        style={{
+                          height: '30%',
+                          opacity: isDarkMode ? 0.8 : 1
+                        }}
+                      />
+                      <div className="mt-2 text-center">
+                        <span 
+                          className="block text-xs mb-1"
+                          style={{ color: styles.chart.textColor }}
+                        >
+                          Service
+                        </span>
+                        <span className="block text-xs font-medium">
+                          30K €
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Pie chart */}
+            <div 
+              className="border rounded-lg p-4 h-[390px]"
+              style={styles.chart}
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-medium">Umsatz nach Region</h3>
+                <div className="flex text-xs space-x-1">
+                  <button className="p-1 rounded" style={{
+                    backgroundColor: isDarkMode ? 'rgba(55, 65, 81, 0.5)' : '#f3f4f6',
+                    color: isDarkMode ? 'rgba(209, 213, 219, 0.9)' : '#4b5563'
+                  }}>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+                    </svg>
+                  </button>
+                  <button className="p-1 rounded" style={{
+                    backgroundColor: isDarkMode ? 'rgba(55, 65, 81, 0.5)' : '#f3f4f6',
+                    color: isDarkMode ? 'rgba(209, 213, 219, 0.9)' : '#4b5563'
+                  }}>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div className="h-[320px] flex items-center justify-center">
+                {/* Pie chart visualization */}
+                <div className="relative h-[220px] w-[220px]">
+                  <svg viewBox="0 0 100 100" width="100%" height="100%">
+                    {/* Use predefined pie segments instead of trying to use paths from viz.config */}
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="40"
+                      fill="transparent"
+                      stroke="#4285F4"
+                      strokeWidth="20"
+                      strokeDasharray="70 30"
+                      transform="rotate(-90) translate(-100, 0)"
+                      opacity={isDarkMode ? 0.8 : 1}
+                    />
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="40"
+                      fill="transparent"
+                      stroke="#34A853"
+                      strokeWidth="20"
+                      strokeDasharray="50 50"
+                      transform="rotate(180) translate(-100, -100)"
+                      opacity={isDarkMode ? 0.8 : 1}
+                    />
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="40"
+                      fill="transparent"
+                      stroke="#FBBC05"
+                      strokeWidth="20"
+                      strokeDasharray="40 60"
+                      transform="rotate(90) translate(0, -100)"
+                      opacity={isDarkMode ? 0.8 : 1}
+                    />
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="40"
+                      fill="transparent"
+                      stroke="#EA4335"
+                      strokeWidth="20"
+                      strokeDasharray="25 75"
+                      transform="rotate(0) translate(0, 0)"
+                      opacity={isDarkMode ? 0.8 : 1}
+                    />
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="30"
+                      fill={isDarkMode ? 'rgba(31, 41, 55, 0.6)' : 'white'}
+                    />
+                  </svg>
+                </div>
+                <div className="ml-8">
+                  {/* Static region data instead of using the visualizations */}
+                  <div className="flex items-center mb-3">
+                    <div 
+                      className="w-3 h-3 rounded-full mr-2" 
+                      style={{ 
+                        backgroundColor: "#4285F4",
+                        opacity: isDarkMode ? 0.8 : 1
+                      }}
+                    />
+                    <div>
+                      <span className="block text-sm" style={{ color: styles.chart.textColor }}>
+                        Nord
+                      </span>
+                      <span className="text-sm font-medium">
+                        35%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center mb-3">
+                    <div 
+                      className="w-3 h-3 rounded-full mr-2" 
+                      style={{ 
+                        backgroundColor: "#34A853",
+                        opacity: isDarkMode ? 0.8 : 1
+                      }}
+                    />
+                    <div>
+                      <span className="block text-sm" style={{ color: styles.chart.textColor }}>
+                        Süd
+                      </span>
+                      <span className="text-sm font-medium">
+                        25%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center mb-3">
+                    <div 
+                      className="w-3 h-3 rounded-full mr-2" 
+                      style={{ 
+                        backgroundColor: "#FBBC05",
+                        opacity: isDarkMode ? 0.8 : 1
+                      }}
+                    />
+                    <div>
+                      <span className="block text-sm" style={{ color: styles.chart.textColor }}>
+                        Ost
+                      </span>
+                      <span className="text-sm font-medium">
+                        20%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center mb-3">
+                    <div 
+                      className="w-3 h-3 rounded-full mr-2" 
+                      style={{ 
+                        backgroundColor: "#EA4335",
+                        opacity: isDarkMode ? 0.8 : 1
+                      }}
+                    />
+                    <div>
+                      <span className="block text-sm" style={{ color: styles.chart.textColor }}>
+                        West
+                      </span>
+                      <span className="text-sm font-medium">
+                        20%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -13,12 +13,25 @@ import { PowerPagesDemo } from "./components/PowerPagesDemo";
 import { CopilotStudioDemo } from "./components/CopilotStudioDemo";
 import { PowerAdminDemo } from "./components/PowerAdminDemo";
 import { BusinessSolutionDemo } from "./components/BusinessSolutionDemo";
+import { useTheme } from "@/lib/themeContext";
 
 export default function PowerPlatformPage() {
   useEffect(() => {
     // Any page initialization logic
     document.title = "Microsoft Power Platform - AI Presentation";
   }, []);
+
+  const { isDarkMode } = useTheme();
+
+  const infoBoxStyle = {
+    backgroundColor: isDarkMode ? 'var(--card-bg)' : 'white',
+    borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+    color: isDarkMode ? 'var(--foreground)' : 'inherit'
+  };
+
+  const listTextStyle = {
+    color: isDarkMode ? 'var(--foreground)' : '#374151'
+  };
 
   return (
     <main className="power-platform-section">
@@ -47,7 +60,7 @@ export default function PowerPlatformPage() {
         </InteractiveArea>
 
         <div className="mt-10 space-y-8">
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="p-6 rounded-lg shadow-sm border" style={infoBoxStyle}>
             <h3 className="text-xl font-bold mb-3 text-purple-700">Power Apps</h3>
             <p className="mb-4">
               Mit Power Apps können Sie benutzerdefinierte Geschäftsanwendungen erstellen, ohne tiefgreifende Programmierkenntnisse 
@@ -57,7 +70,7 @@ export default function PowerPlatformPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <h4 className="text-md font-semibold mb-2">So funktioniert's:</h4>
-                <ol className="list-decimal pl-5 text-sm text-gray-700 space-y-1">
+                <ol className="list-decimal pl-5 text-sm space-y-1" style={listTextStyle}>
                   <li>Wählen Sie den App-Typ (Canvas oder Model-driven)</li>
                   <li>Verbinden Sie Ihre Datenquellen (Dataverse, SharePoint, Excel, etc.)</li>
                   <li>Erstellen Sie Bildschirme mit Drag-and-Drop-Komponenten</li>
@@ -67,7 +80,7 @@ export default function PowerPlatformPage() {
               </div>
               <div>
                 <h4 className="text-md font-semibold mb-2">Anwendungsfälle:</h4>
-                <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                <ul className="list-disc pl-5 text-sm space-y-1" style={listTextStyle}>
                   <li>Inventarverwaltungsanwendungen</li>
                   <li>Mitarbeiter-Onboarding-Prozesse</li>
                   <li>Felddienstmanagement mit mobilen Apps</li>
@@ -78,7 +91,7 @@ export default function PowerPlatformPage() {
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="p-6 rounded-lg shadow-sm border" style={infoBoxStyle}>
             <h3 className="text-xl font-bold mb-3 text-blue-700">Power Automate</h3>
             <p className="mb-4">
               Power Automate ermöglicht die Automatisierung von Geschäftsprozessen durch visuelle Workflows ohne komplexe Programmierung. 
@@ -88,7 +101,7 @@ export default function PowerPlatformPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <h4 className="text-md font-semibold mb-2">So funktioniert's:</h4>
-                <ol className="list-decimal pl-5 text-sm text-gray-700 space-y-1">
+                <ol className="list-decimal pl-5 text-sm space-y-1" style={listTextStyle}>
                   <li>Wählen Sie einen Flow-Typ (automatisiert, instant, geplant)</li>
                   <li>Definieren Sie den Auslöser, der den Flow startet</li>
                   <li>Fügen Sie Aktionen hinzu, die ausgeführt werden sollen</li>
@@ -98,7 +111,7 @@ export default function PowerPlatformPage() {
               </div>
               <div>
                 <h4 className="text-md font-semibold mb-2">Anwendungsfälle:</h4>
-                <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                <ul className="list-disc pl-5 text-sm space-y-1" style={listTextStyle}>
                   <li>Dokumentengenehmigungsworkflows</li>
                   <li>Automatisierte E-Mail-Benachrichtigungen</li>
                   <li>Datensynchronisation zwischen Systemen</li>
@@ -113,7 +126,7 @@ export default function PowerPlatformPage() {
             <PowerAutomateDemo />
           </InteractiveArea>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="p-6 rounded-lg shadow-sm border" style={infoBoxStyle}>
             <h3 className="text-xl font-bold mb-3 text-yellow-700">Power BI</h3>
             <p className="mb-4">
               Power BI transformiert Ihre Daten in interaktive Visualisierungen und Berichte, die fundierte 
@@ -123,7 +136,7 @@ export default function PowerPlatformPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <h4 className="text-md font-semibold mb-2">So funktioniert's:</h4>
-                <ol className="list-decimal pl-5 text-sm text-gray-700 space-y-1">
+                <ol className="list-decimal pl-5 text-sm space-y-1" style={listTextStyle}>
                   <li>Verbinden Sie Ihre Datenquellen</li>
                   <li>Transformieren und modellieren Sie Ihre Daten</li>
                   <li>Erstellen Sie Visualisierungen mit Drag-and-Drop</li>
@@ -133,7 +146,7 @@ export default function PowerPlatformPage() {
               </div>
               <div>
                 <h4 className="text-md font-semibold mb-2">Anwendungsfälle:</h4>
-                <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                <ul className="list-disc pl-5 text-sm space-y-1" style={listTextStyle}>
                   <li>Vertriebspipeline-Visualisierung</li>
                   <li>Finanzielle Leistungsüberwachung</li>
                   <li>Betriebliche Effizienzanalyse</li>
@@ -148,7 +161,7 @@ export default function PowerPlatformPage() {
             <PowerBIDemo />
           </InteractiveArea>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="p-6 rounded-lg shadow-sm border" style={infoBoxStyle}>
             <h3 className="text-xl font-bold mb-3 text-green-700">Power Pages</h3>
             <p className="mb-4">
               Power Pages ermöglicht die Erstellung sicherer, responsiver Websites für externe Benutzer, 
@@ -158,7 +171,7 @@ export default function PowerPlatformPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <h4 className="text-md font-semibold mb-2">So funktioniert's:</h4>
-                <ol className="list-decimal pl-5 text-sm text-gray-700 space-y-1">
+                <ol className="list-decimal pl-5 text-sm space-y-1" style={listTextStyle}>
                   <li>Wählen Sie eine Website-Vorlage</li>
                   <li>Passen Sie Design und Branding an</li>
                   <li>Erstellen Sie Seiten mit dem WYSIWYG-Editor</li>
@@ -168,7 +181,7 @@ export default function PowerPlatformPage() {
               </div>
               <div>
                 <h4 className="text-md font-semibold mb-2">Anwendungsfälle:</h4>
-                <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                <ul className="list-disc pl-5 text-sm space-y-1" style={listTextStyle}>
                   <li>Kundenportale für Serviceanfragen</li>
                   <li>Partner-Onboarding und -Management</li>
                   <li>Eventregistrierung und -management</li>
@@ -183,7 +196,7 @@ export default function PowerPlatformPage() {
             <PowerPagesDemo />
           </InteractiveArea>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="p-6 rounded-lg shadow-sm border" style={infoBoxStyle}>
             <h3 className="text-xl font-bold mb-3 text-orange-700">Copilot Studio</h3>
             <p className="mb-4">
               Copilot Studio (früher Power Virtual Agents) ermöglicht die Erstellung intelligenter Chatbots ohne 
@@ -193,7 +206,7 @@ export default function PowerPlatformPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <h4 className="text-md font-semibold mb-2">So funktioniert's:</h4>
-                <ol className="list-decimal pl-5 text-sm text-gray-700 space-y-1">
+                <ol className="list-decimal pl-5 text-sm space-y-1" style={listTextStyle}>
                   <li>Erstellen Sie Themen für Ihren Bot</li>
                   <li>Gestalten Sie Konversationsabläufe visuell</li>
                   <li>Verbinden Sie Ihren Bot mit Datenquellen</li>
@@ -203,7 +216,7 @@ export default function PowerPlatformPage() {
               </div>
               <div>
                 <h4 className="text-md font-semibold mb-2">Anwendungsfälle:</h4>
-                <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                <ul className="list-disc pl-5 text-sm space-y-1" style={listTextStyle}>
                   <li>Kundenservice-Automatisierung</li>
                   <li>IT-Helpdesk und Problemlösung</li>
                   <li>Mitarbeiter-FAQ und Onboarding</li>
@@ -218,7 +231,7 @@ export default function PowerPlatformPage() {
             <CopilotStudioDemo />
           </InteractiveArea>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="p-6 rounded-lg shadow-sm border" style={infoBoxStyle}>
             <h3 className="text-xl font-bold mb-3 text-indigo-700">Dataverse</h3>
             <p className="mb-4">
               Dataverse ist die zugrunde liegende Datenspeicher- und -modellierungsplattform für die Power Platform. 
@@ -228,7 +241,7 @@ export default function PowerPlatformPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <h4 className="text-md font-semibold mb-2">So funktioniert's:</h4>
-                <ol className="list-decimal pl-5 text-sm text-gray-700 space-y-1">
+                <ol className="list-decimal pl-5 text-sm space-y-1" style={listTextStyle}>
                   <li>Definieren Sie Ihr Datenmodell mit Tabellen und Spalten</li>
                   <li>Erstellen Sie Beziehungen zwischen Tabellen</li>
                   <li>Implementieren Sie Geschäftsregeln und Validierung</li>
@@ -238,7 +251,7 @@ export default function PowerPlatformPage() {
               </div>
               <div>
                 <h4 className="text-md font-semibold mb-2">Anwendungsfälle:</h4>
-                <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                <ul className="list-disc pl-5 text-sm space-y-1" style={listTextStyle}>
                   <li>Zentralisierte Kundendatenplattform</li>
                   <li>Produktkatalog- und Inventarmanagement</li>
                   <li>Mitarbeiter- und Talentmanagement</li>
@@ -249,7 +262,7 @@ export default function PowerPlatformPage() {
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="p-6 rounded-lg shadow-sm border" style={infoBoxStyle}>
             <h3 className="text-xl font-bold mb-3 text-red-700">Power Platform Admin Center</h3>
             <p className="mb-4">
               Das Power Platform Admin Center bietet eine zentrale Oberfläche für die Verwaltung, Überwachung 
@@ -259,7 +272,7 @@ export default function PowerPlatformPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <h4 className="text-md font-semibold mb-2">So funktioniert's:</h4>
-                <ol className="list-decimal pl-5 text-sm text-gray-700 space-y-1">
+                <ol className="list-decimal pl-5 text-sm space-y-1" style={listTextStyle}>
                   <li>Erstellen und verwalten Sie Umgebungen</li>
                   <li>Implementieren Sie Data Loss Prevention (DLP) Richtlinien</li>
                   <li>Überwachen Sie die Nutzung und Kapazität</li>
@@ -269,7 +282,7 @@ export default function PowerPlatformPage() {
               </div>
               <div>
                 <h4 className="text-md font-semibold mb-2">Anwendungsfälle:</h4>
-                <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                <ul className="list-disc pl-5 text-sm space-y-1" style={listTextStyle}>
                   <li>Unternehmensweite Governance-Implementierung</li>
                   <li>Kostenverwaltung und -optimierung</li>
                   <li>Sicherheitsverwaltung und Compliance</li>

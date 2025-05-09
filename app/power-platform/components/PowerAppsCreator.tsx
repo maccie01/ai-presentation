@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTheme } from '@/lib/themeContext';
 
 interface CanvasElement {
   id: string;
@@ -32,6 +33,7 @@ interface ComponentTemplate {
 
 export function PowerAppsCreator() {
   const [activeTab, setActiveTab] = useState<'editor' | 'components' | 'data'>('editor');
+  const { isDarkMode } = useTheme();
   const [canvasElements, setCanvasElements] = useState<CanvasElement[]>([
     {
       id: 'header',
@@ -224,10 +226,15 @@ export function PowerAppsCreator() {
         <h3 className="font-bold text-lg mb-3">{element.name} ({element.type})</h3>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+            <label className="block text-sm font-medium mb-1" style={{ color: isDarkMode ? 'var(--foreground)' : '#374151' }}>Name</label>
             <input 
               type="text" 
-              className="w-full p-2 border border-gray-300 rounded-md"
+              className="w-full p-2 border rounded-md"
+              style={{
+                backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.6)' : 'white',
+                borderColor: isDarkMode ? 'var(--border-color)' : '#d1d5db',
+                color: isDarkMode ? 'var(--foreground)' : 'inherit'
+              }}
               value={element.name}
               onChange={() => {}}
             />
@@ -235,103 +242,195 @@ export function PowerAppsCreator() {
           
           {Object.entries(element.properties).map(([key, value]) => (
             <div key={key}>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium mb-1" style={{ color: isDarkMode ? 'var(--foreground)' : '#374151' }}>
                 {key.charAt(0).toUpperCase() + key.slice(1)}
               </label>
               <input 
                 type="text" 
-                className="w-full p-2 border border-gray-300 rounded-md"
+                className="w-full p-2 border rounded-md"
+                style={{
+                  backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.6)' : 'white',
+                  borderColor: isDarkMode ? 'var(--border-color)' : '#d1d5db',
+                  color: isDarkMode ? 'var(--foreground)' : 'inherit'
+                }}
                 value={typeof value === 'object' ? JSON.stringify(value) : value}
                 onChange={() => {}}
               />
             </div>
           ))}
-          
-          <div className="pt-2 border-t border-gray-200">
-            <button className="px-3 py-1 bg-red-100 text-red-800 rounded-md text-sm">
-              Element löschen
-            </button>
-          </div>
         </div>
       </div>
     );
   };
   
+  // Define styles with dark mode support
+  const styles = {
+    panel: {
+      backgroundColor: isDarkMode ? 'rgba(17, 24, 39, 0.8)' : '#f9fafb',
+      borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+    },
+    component: {
+      backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.6)' : 'white',
+      borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+      border: '1px solid',
+      color: isDarkMode ? 'var(--foreground)' : 'inherit',
+    },
+    canvas: {
+      backgroundColor: isDarkMode ? 'rgba(17, 24, 39, 0.5)' : '#f9fafb',
+      borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+      color: isDarkMode ? 'var(--foreground)' : 'inherit',
+    },
+    dataConnector: {
+      backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.6)' : 'white',
+      borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+      color: isDarkMode ? 'var(--foreground)' : 'inherit',
+    },
+    tab: {
+      active: {
+        borderColor: '#5b21b6',
+        color: isDarkMode ? 'white' : '#374151',
+      },
+      inactive: {
+        color: isDarkMode ? 'rgba(209, 213, 219, 0.8)' : '#6b7280',
+        hover: {
+          backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.3)' : 'rgba(243, 244, 246, 0.5)'
+        }
+      }
+    },
+    hoverElement: {
+      backgroundColor: isDarkMode ? 'rgba(55, 65, 81, 0.5)' : 'rgba(243, 244, 246, 0.7)'
+    }
+  };
+  
   const renderCanvasElement = (element: CanvasElement) => {
-    const isSelected = selectedElement === element.id;
     const style = {
-      position: 'absolute' as 'absolute',
+      position: 'absolute' as const,
       left: `${element.x}px`,
       top: `${element.y}px`,
       width: `${element.width}px`,
       height: `${element.height}px`,
+      cursor: 'pointer',
+      border: selectedElement === element.id ? '2px solid #5b21b6' : '1px solid',
+      borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.6)' : '#ddd',
+      backgroundColor: element.type === 'container' ? 
+        (element.properties.color || (isDarkMode ? 'rgba(31, 41, 55, 0.6)' : '#f0f4f8')) : 
+        (element.properties.backgroundColor && 
+         element.properties.backgroundColor === '#0078d4' && 
+         isDarkMode ? '#0078d4' : element.properties.backgroundColor || 'transparent'),
       borderRadius: element.properties.borderRadius ? `${element.properties.borderRadius}px` : '0',
-      backgroundColor: element.properties.backgroundColor || 
-                      (element.type === 'container' ? element.properties.color : 'white'),
-      border: isSelected ? '2px solid #0078d4' : '1px solid #ccc',
-      padding: element.properties.padding || '4px',
-      fontSize: element.properties.fontSize ? `${element.properties.fontSize}px` : 'inherit',
-      fontWeight: element.properties.fontWeight || 'normal',
-      color: element.properties.color || 'black',
+      padding: element.properties.padding || '0',
       display: 'flex',
       alignItems: 'center',
       justifyContent: element.type === 'button' ? 'center' : 'flex-start',
-      cursor: 'pointer',
-      overflow: 'hidden'
+      color: element.properties.color === '#f0f4f8' && isDarkMode ? 'var(--foreground)' : element.properties.color,
     };
     
     return (
       <div 
         key={element.id}
         style={style}
-        onClick={(e) => {
-          e.stopPropagation();
-          setSelectedElement(element.id);
-        }}
+        onClick={() => setSelectedElement(element.id)}
       >
-        {element.type === 'label' && element.properties.text}
-        {element.type === 'button' && element.properties.text}
+        {element.type === 'label' && (
+          <span style={{ 
+            fontWeight: element.properties.fontWeight || 'normal',
+            fontSize: element.properties.fontSize ? `${element.properties.fontSize}px` : 'inherit',
+            color: isDarkMode ? 'var(--foreground)' : 'inherit'
+          }}>
+            {element.properties.text || ''}
+          </span>
+        )}
+        
         {element.type === 'textinput' && (
           <input 
-            type="text" 
-            placeholder={element.properties.placeholder} 
-            className="w-full h-full border-none bg-transparent outline-none"
-            onClick={(e) => e.stopPropagation()}
+            type="text"
+            style={{
+              width: '100%',
+              height: '100%',
+              border: 'none',
+              background: 'transparent',
+              outline: 'none',
+              padding: '0 8px',
+              color: isDarkMode ? 'var(--foreground)' : 'inherit'
+            }}
+            placeholder={element.properties.placeholder || ''}
+            readOnly
           />
         )}
+        
+        {element.type === 'button' && (
+          <button style={{ 
+            color: isDarkMode && !element.properties.color ? 'var(--foreground)' : element.properties.color || 'inherit'
+          }}>
+            {element.properties.text || 'Button'}
+          </button>
+        )}
+        
         {element.type === 'datatable' && (
-          <table className="w-full border-collapse">
-            <thead>
-              <tr>
-                {element.properties.headers.map((header: string, i: number) => (
-                  <th key={i} className="border border-gray-300 px-2 py-1 bg-gray-100 text-sm">{header}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[1, 2, 3].map(row => (
-                <tr key={row}>
-                  {element.properties.headers.map((header: string, i: number) => (
-                    <td key={i} className="border border-gray-300 px-2 py-1 text-sm">
-                      {i === 0 ? `PRD-${row}00` : `Sample ${row}`}
-                    </td>
+          <div style={{ width: '100%', height: '100%', overflow: 'auto', fontSize: '12px' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  {(element.properties.headers || ['Column 1', 'Column 2']).map((header: string, i: number) => (
+                    <th key={i} style={{ 
+                      padding: '6px', 
+                      borderBottom: '1px solid',
+                      borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.6)' : '#ddd',
+                      textAlign: 'left',
+                      backgroundColor: isDarkMode ? 'rgba(17, 24, 39, 0.8)' : '#f3f4f6',
+                      color: isDarkMode ? 'var(--foreground)' : 'inherit'
+                    }}>
+                      {header}
+                    </th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {[1, 2, 3].map(row => (
+                  <tr key={row}>
+                    {(element.properties.headers || ['Column 1', 'Column 2']).map((header: string, i: number) => (
+                      <td key={i} style={{ 
+                        padding: '4px 6px', 
+                        borderBottom: '1px solid',
+                        borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.6)' : '#ddd',
+                        color: isDarkMode ? 'var(--foreground)' : 'inherit'
+                      }}>
+                        Sample data
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
+        
         {element.type === 'form' && (
-          <div className="w-full p-2">
-            {element.properties.fields.map((field: string, i: number) => (
-              <div key={i} className="mb-2">
-                <label className="block text-sm font-medium">{field}:</label>
-                <input type="text" className="w-full border border-gray-300 p-1 text-sm" />
+          <div style={{ width: '100%', height: '100%', padding: '10px', fontSize: '12px' }}>
+            {(element.properties.fields || ['Field 1', 'Field 2']).map((field: string, i: number) => (
+              <div key={i} style={{ marginBottom: '10px' }}>
+                <label style={{ 
+                  display: 'block', 
+                  marginBottom: '4px',
+                  color: isDarkMode ? 'var(--foreground)' : 'inherit'
+                }}>
+                  {field}
+                </label>
+                <input 
+                  type="text" 
+                  style={{ 
+                    width: '100%', 
+                    padding: '4px', 
+                    border: '1px solid',
+                    borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.6)' : '#ddd',
+                    borderRadius: '3px',
+                    backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.6)' : 'white',
+                    color: isDarkMode ? 'var(--foreground)' : 'inherit'
+                  }} 
+                  readOnly
+                />
               </div>
             ))}
-            <div className="mt-3 flex justify-end">
-              <button className="bg-blue-600 text-white px-3 py-1 text-sm rounded">Speichern</button>
-            </div>
           </div>
         )}
       </div>
@@ -339,69 +438,119 @@ export function PowerAppsCreator() {
   };
   
   return (
-    <div className="power-apps-creator border border-gray-200 rounded-lg overflow-hidden">
-      <div className="bg-[#742774] text-white p-2 flex items-center">
-        <div className="mr-2 bg-white text-[#742774] rounded-full h-6 w-6 flex items-center justify-center font-bold">P</div>
-        <span className="font-medium">Power Apps Studio</span>
-        <div className="ml-auto flex space-x-2">
-          <button className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-sm text-sm">Vorschau</button>
-          <button className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-sm text-sm">Speichern</button>
-          <button className="bg-white text-[#742774] px-3 py-1 rounded-sm text-sm font-medium">Veröffentlichen</button>
+    <div className="power-apps-creator w-full h-[600px] rounded-lg overflow-hidden border" style={{ borderColor: styles.canvas.borderColor }}>
+      {/* Studio Header */}
+      <div className="studio-header h-12 flex items-center justify-between px-4 border-b" style={{
+        backgroundColor: isDarkMode ? '#462A7C' : '#742774',
+        borderColor: styles.canvas.borderColor,
+        color: 'white'
+      }}>
+        <div className="flex items-center">
+          <span className="font-bold text-lg mr-1">Power Apps</span>
+          <span className="text-sm opacity-80">| Studio</span>
+        </div>
+        <div className="flex space-x-2">
+          <button 
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              color: 'white',
+            }}
+            className="hover:bg-white/30 px-3 py-1 rounded text-sm cursor-pointer"
+          >
+            Vorschau
+          </button>
+          <button 
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              color: 'white',
+            }}
+            className="hover:bg-white/30 px-3 py-1 rounded text-sm cursor-pointer"
+          >
+            Speichern
+          </button>
+          <button 
+            style={{
+              backgroundColor: 'white',
+              color: isDarkMode ? '#462A7C' : '#742774',
+            }}
+            className="px-3 py-1 rounded text-sm font-medium cursor-pointer"
+          >
+            Veröffentlichen
+          </button>
         </div>
       </div>
       
-      <div className="flex h-[600px]">
-        {/* Left Sidebar */}
-        <div className="w-64 bg-gray-100 border-r border-gray-200 flex flex-col">
-          <div className="p-2 border-b border-gray-200">
-            <div className="flex space-x-1">
-              <button 
-                className={`flex-1 py-2 px-3 text-sm rounded ${activeTab === 'editor' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
-                onClick={() => setActiveTab('editor')}
-              >
-                Eigenschaften
-              </button>
-              <button 
-                className={`flex-1 py-2 px-3 text-sm rounded ${activeTab === 'components' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
-                onClick={() => setActiveTab('components')}
-              >
-                Komponenten
-              </button>
-              <button 
-                className={`flex-1 py-2 px-3 text-sm rounded ${activeTab === 'data' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
-                onClick={() => setActiveTab('data')}
-              >
-                Daten
-              </button>
-            </div>
+      {/* Studio Main Area */}
+      <div className="studio-main flex h-[590px]">
+        {/* Left Panel - Components/Data/Properties */}
+        <div className="left-panel w-64 border-r h-full overflow-hidden flex flex-col" style={styles.panel}>
+          <div className="tabs flex border-b" style={{ borderColor: styles.panel.borderColor }}>
+            <button 
+              className={`flex-1 py-2 text-sm ${activeTab === 'editor' ? 'font-medium border-b-2' : ''}`}
+              style={activeTab === 'editor' ? styles.tab.active : { color: styles.tab.inactive.color }}
+              onClick={() => setActiveTab('editor')}
+            >
+              Editor
+            </button>
+            <button 
+              className={`flex-1 py-2 text-sm ${activeTab === 'components' ? 'font-medium border-b-2' : ''}`}
+              style={activeTab === 'components' ? styles.tab.active : { color: styles.tab.inactive.color }}
+              onClick={() => setActiveTab('components')}
+            >
+              Komponenten
+            </button>
+            <button 
+              className={`flex-1 py-2 text-sm ${activeTab === 'data' ? 'font-medium border-b-2' : ''}`}
+              style={activeTab === 'data' ? styles.tab.active : { color: styles.tab.inactive.color }}
+              onClick={() => setActiveTab('data')}
+            >
+              Daten
+            </button>
           </div>
           
-          <div className="flex-1 overflow-y-auto">
-            {activeTab === 'editor' && <PropertyPanel />}
+          <div className="panel-content p-4 overflow-y-auto flex-grow">
+            {activeTab === 'editor' && (
+              <div>
+                <h3 className="font-medium mb-2">Bildschirme</h3>
+                <ul className="text-sm space-y-1">
+                  <li className="py-1 px-2 rounded" style={{ backgroundColor: isDarkMode ? 'rgba(147, 51, 234, 0.2)' : 'rgb(243, 232, 255)' }}>Hauptbildschirm</li>
+                  <li className="py-1 px-2 cursor-pointer rounded hover:bg-gray-100" style={{ 
+                    backgroundColor: isDarkMode ? 'transparent' : 'transparent',
+                  }}>Detailansicht</li>
+                  <li className="py-1 px-2 cursor-pointer rounded hover:bg-gray-100" style={{ 
+                    backgroundColor: isDarkMode ? 'transparent' : 'transparent',
+                  }}>Bearbeitungsformular</li>
+                </ul>
+                
+                <h3 className="font-medium mt-4 mb-2">Elemente</h3>
+                <div>
+                  {selectedElement && (
+                    <PropertyPanel />
+                  )}
+                </div>
+              </div>
+            )}
             
             {activeTab === 'components' && (
-              <div className="p-3">
-                <div className="mb-4">
-                  <h3 className="font-medium mb-2">Komponenten</h3>
-                  <input 
-                    type="text" 
-                    className="w-full p-2 border border-gray-300 rounded-md text-sm" 
-                    placeholder="Komponente suchen..."
-                  />
-                </div>
-                
+              <div>
+                <h3 className="font-medium mb-3">UI-Komponenten</h3>
                 <div className="grid grid-cols-2 gap-2">
                   {componentTemplates.map(component => (
                     <motion.div
                       key={component.id}
-                      className="bg-white p-3 rounded border border-gray-200 cursor-grab hover:border-blue-400 hover:shadow-sm text-center"
-                      whileHover={{ scale: 1.03 }}
+                      className="cursor-grab text-center"
+                      style={{ 
+                        padding: '12px',
+                        borderRadius: '4px',
+                        ...styles.component
+                      }}
+                      whileHover={{ scale: 1.05, borderColor: isDarkMode ? '#8b5cf6' : '#8b5cf6' }}
                       draggable
                       onDragStart={() => handleDragStart(component.id)}
                       onDragEnd={handleDragEnd}
                     >
-                      <div className="text-2xl mb-1">{component.icon}</div>
-                      <div className="text-sm font-medium">{component.name}</div>
+                      <div>{component.icon}</div>
+                      <div className="text-xs mt-1">{component.name}</div>
                     </motion.div>
                   ))}
                 </div>
@@ -409,29 +558,21 @@ export function PowerAppsCreator() {
             )}
             
             {activeTab === 'data' && (
-              <div className="p-3">
-                <div className="mb-4">
-                  <h3 className="font-medium mb-2">Datenquellen</h3>
-                  <input 
-                    type="text" 
-                    className="w-full p-2 border border-gray-300 rounded-md text-sm" 
-                    placeholder="Datenquelle suchen..."
-                  />
-                </div>
-                
+              <div>
+                <h3 className="font-medium mb-3">Datenquellen</h3>
                 <div className="space-y-2">
                   {dataConnectors.map(connector => (
-                    <motion.div
+                    <div 
                       key={connector.id}
-                      className="bg-white p-3 rounded border border-gray-200 hover:border-blue-400 hover:shadow-sm"
-                      whileHover={{ scale: 1.02 }}
+                      className="p-3 rounded border flex items-start"
+                      style={styles.dataConnector}
                     >
-                      <div className="flex items-center mb-1">
-                        <span className="text-xl mr-2">{connector.icon}</span>
-                        <span className="font-medium">{connector.name}</span>
+                      <div className="text-2xl mr-3">{connector.icon}</div>
+                      <div>
+                        <h4 className="font-medium text-sm">{connector.name}</h4>
+                        <p className="text-xs mt-1">{connector.description}</p>
                       </div>
-                      <p className="text-xs text-gray-600">{connector.description}</p>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -440,20 +581,8 @@ export function PowerAppsCreator() {
         </div>
         
         {/* Canvas Area */}
-        <div className="flex-1 bg-gray-50 relative">
-          <div className="p-2 bg-white border-b border-gray-200 flex items-center">
-            <span className="font-medium text-sm">Bildschirm 1</span>
-            <span className="ml-auto text-sm text-gray-500">Phone Layout (1080 x 1920)</span>
-          </div>
-          
-          <div 
-            className="canvas-area relative overflow-auto h-[550px]"
-            onClick={() => setSelectedElement(null)}
-          >
-            <div className="canvas bg-white shadow-sm mx-auto my-4" style={{ width: '600px', height: '900px', position: 'relative' }}>
-              {canvasElements.map(renderCanvasElement)}
-            </div>
-          </div>
+        <div className="canvas-area flex-1 relative overflow-auto" style={styles.canvas}>
+          {canvasElements.map(element => renderCanvasElement(element))}
         </div>
       </div>
     </div>

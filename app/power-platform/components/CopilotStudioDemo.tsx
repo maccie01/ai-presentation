@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useTheme } from '@/lib/themeContext';
 
 interface BotTopic {
   id: string;
@@ -24,6 +25,7 @@ interface ChatMessage {
 }
 
 export function CopilotStudioDemo() {
+  const { isDarkMode } = useTheme();
   const [activeTab, setActiveTab] = useState<'topics' | 'flows' | 'test'>('topics');
   const [selectedTopic, setSelectedTopic] = useState<string | null>('topic1');
   const [userQuestion, setUserQuestion] = useState('');
@@ -181,14 +183,62 @@ export function CopilotStudioDemo() {
     }
   };
   
+  const styles = {
+    container: {
+      backgroundColor: isDarkMode ? 'var(--card-bg)' : 'white',
+      borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+      color: isDarkMode ? 'var(--foreground)' : 'inherit',
+    },
+    header: {
+      backgroundColor: isDarkMode ? 'rgba(17, 24, 39, 0.8)' : '#f3f4f6',
+      borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+    },
+    panel: {
+      backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.8)' : 'white',
+      borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+    },
+    content: {
+      backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.6)' : 'white',
+      borderColor: isDarkMode ? 'var(--border-color)' : '#e5e7eb',
+    },
+    button: {
+      standard: {
+        backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.2)',
+        color: isDarkMode ? 'var(--foreground)' : 'inherit',
+      },
+      primary: {
+        backgroundColor: isDarkMode ? 'rgba(242, 80, 34, 0.8)' : 'white',
+        color: isDarkMode ? 'white' : '#F25022',
+      },
+    },
+    text: {
+      muted: {
+        color: isDarkMode ? 'rgba(156, 163, 175, 0.8)' : '#6b7280',
+      },
+    },
+  };
+  
   return (
-    <div className="copilot-studio-demo border border-gray-200 rounded-lg overflow-hidden">
-      <div className="bg-[#F25022] text-white p-2 flex items-center">
-        <div className="mr-2 bg-white text-[#F25022] rounded-full h-6 w-6 flex items-center justify-center font-bold">C</div>
-        <span className="font-medium">Copilot Studio - Kundenservice Bot</span>
-        <div className="ml-auto flex space-x-2">
-          <button className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-sm text-sm">Speichern</button>
-          <button className="bg-white text-[#F25022] px-3 py-1 rounded-sm text-sm font-medium">Veröffentlichen</button>
+    <div className="copilot-studio-demo border rounded-lg overflow-hidden" style={styles.container}>
+      <div className="flex items-center justify-between p-3 border-b" style={{ borderColor: styles.container.borderColor }}>
+        <div className="flex items-center">
+          <span className="text-orange-600 font-medium">Copilot Studio</span>
+          <span className="mx-2 text-gray-300">|</span>
+          <span className="text-sm" style={styles.text.muted}>Kundenservice Bot</span>
+        </div>
+        <div className="flex space-x-2">
+          <button 
+            className="hover:bg-white/30 px-3 py-1 rounded-sm text-sm"
+            style={styles.button.standard}
+          >
+            Speichern
+          </button>
+          <button 
+            className="px-3 py-1 rounded-sm text-sm font-medium"
+            style={styles.button.primary}
+          >
+            Veröffentlichen
+          </button>
         </div>
       </div>
       

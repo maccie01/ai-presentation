@@ -2,8 +2,10 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTheme } from '@/lib/themeContext';
 
 export function PowerAdminDemo() {
+  const { isDarkMode } = useTheme();
   const [activeTab, setActiveTab] = useState<'environments' | 'dlp' | 'users' | 'analytics'>('environments');
   const [selectedEnvironment, setSelectedEnvironment] = useState<string | null>('prod');
   
