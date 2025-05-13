@@ -41,7 +41,7 @@ const nodeTypes = {
   governanceNode: GovernanceNode,
 };
 
-// Governance framework diagram data
+// Governance framework diagram data with adjusted positions to avoid overlapping
 const initialNodes: Node[] = [
   {
     id: '1',
@@ -76,7 +76,7 @@ const initialNodes: Node[] = [
   {
     id: '4',
     type: 'governanceNode',
-    position: { x: 100, y: 200 },
+    position: { x: 30, y: 220 },
     data: {
       label: 'Datenschutz & Daten-Governance',
       description: 'Schutz persönlicher Daten',
@@ -86,7 +86,7 @@ const initialNodes: Node[] = [
   {
     id: '5',
     type: 'governanceNode',
-    position: { x: 250, y: 200 },
+    position: { x: 300, y: 220 },
     data: {
       label: 'Verantwortlichkeit',
       description: 'Klare Verantwortungszuordnung',
@@ -96,7 +96,7 @@ const initialNodes: Node[] = [
   {
     id: '6',
     type: 'governanceNode',
-    position: { x: 400, y: 200 },
+    position: { x: 510, y: 220 },
     data: {
       label: 'Sicherheit & Robustheit',
       description: 'Schutz vor Angriffen & Fehlern',
@@ -106,7 +106,7 @@ const initialNodes: Node[] = [
   {
     id: '7',
     type: 'governanceNode',
-    position: { x: 250, y: 300 },
+    position: { x: 250, y: 340 },
     data: {
       label: 'Menschliche Aufsicht & Kontrolle',
       description: 'Sinnvolle menschliche Eingriffsmöglichkeiten',
@@ -116,7 +116,7 @@ const initialNodes: Node[] = [
   {
     id: '8',
     type: 'governanceNode',
-    position: { x: 250, y: 400 },
+    position: { x: 250, y: 460 },
     data: {
       label: 'Regulatorische Compliance',
       description: 'Einhaltung von Gesetzen & Standards',
@@ -355,9 +355,12 @@ const EthicsGovernanceFramework: React.FC = () => {
                       edges={initialEdges}
                       nodeTypes={nodeTypes}
                       fitView
+                      minZoom={0.5}
+                      maxZoom={1.5}
+                      nodesDraggable={false}
                     >
                       <Controls />
-                      <Background />
+                      <Background color={isDarkMode ? '#4b5563' : '#aaa'} gap={16} />
                     </ReactFlow>
                   </div>
                 </div>

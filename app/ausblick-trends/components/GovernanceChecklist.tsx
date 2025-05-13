@@ -12,6 +12,7 @@ import ReactFlow, {
   Position
 } from 'reactflow';
 import 'reactflow/dist/style.css';
+import { useTheme } from '@/lib/themeContext';
 
 // Custom node component for governance framework
 type GovernanceNodeData = {
@@ -51,7 +52,7 @@ const initialNodes: Node[] = [
   {
     id: '2',
     type: 'governanceNode',
-    position: { x: 100, y: 100 },
+    position: { x: 20, y: 100 },
     data: {
       label: 'Ethikrichtlinien',
       description: 'Ethische Standards & Prinzipien',
@@ -61,7 +62,7 @@ const initialNodes: Node[] = [
   {
     id: '3',
     type: 'governanceNode',
-    position: { x: 250, y: 100 },
+    position: { x: 230, y: 100 },
     data: {
       label: 'Risikomanagement',
       description: 'Risikobewertung & -kontrolle',
@@ -71,7 +72,7 @@ const initialNodes: Node[] = [
   {
     id: '4',
     type: 'governanceNode',
-    position: { x: 400, y: 100 },
+    position: { x: 420, y: 100 },
     data: {
       label: 'Compliance',
       description: 'Regulatorische Anforderungen',
@@ -81,7 +82,7 @@ const initialNodes: Node[] = [
   {
     id: '5',
     type: 'governanceNode',
-    position: { x: 100, y: 200 },
+    position: { x: 40, y: 200 },
     data: {
       label: 'Datenschutz',
       description: 'Privacy & Datensouveränität',
@@ -91,7 +92,7 @@ const initialNodes: Node[] = [
   {
     id: '6',
     type: 'governanceNode',
-    position: { x: 250, y: 200 },
+    position: { x: 230, y: 200 },
     data: {
       label: 'KI-Qualitätssicherung',
       description: 'Testing & Validation',
@@ -101,7 +102,7 @@ const initialNodes: Node[] = [
   {
     id: '7',
     type: 'governanceNode',
-    position: { x: 400, y: 200 },
+    position: { x: 420, y: 200 },
     data: {
       label: 'Transparenz',
       description: 'Erklärbarkeit & Dokumentation',
@@ -335,33 +336,46 @@ const raciData: RaciItem[] = [
   }
 ];
 
-// Color map for compliance levels
-const complianceLevelColors = {
-  'Vollständig': 'bg-green-100 border-green-500 text-green-800',
-  'Teilweise': 'bg-yellow-100 border-yellow-500 text-yellow-800',
-  'In Bearbeitung': 'bg-blue-100 border-blue-500 text-blue-800',
-  'Nicht begonnen': 'bg-red-100 border-red-500 text-red-800'
-};
+// Color map for compliance levels with dark mode support
+const getComplianceLevelColors = (isDarkMode: boolean) => ({
+  'Vollständig': isDarkMode 
+    ? 'bg-green-900 border-green-700 text-green-300' 
+    : 'bg-green-100 border-green-500 text-green-800',
+  'Teilweise': isDarkMode 
+    ? 'bg-yellow-900 border-yellow-700 text-yellow-300' 
+    : 'bg-yellow-100 border-yellow-500 text-yellow-800',
+  'In Bearbeitung': isDarkMode 
+    ? 'bg-blue-900 border-blue-700 text-blue-300' 
+    : 'bg-blue-100 border-blue-500 text-blue-800',
+  'Nicht begonnen': isDarkMode 
+    ? 'bg-red-900 border-red-700 text-red-300' 
+    : 'bg-red-100 border-red-500 text-red-800'
+});
 
-// Color map for priority levels
-const priorityColors = {
-  'Hoch': 'bg-red-500',
-  'Mittel': 'bg-yellow-500',
-  'Niedrig': 'bg-green-500'
-};
+// Color map for priority levels with dark mode support
+const getPriorityColors = (isDarkMode: boolean) => ({
+  'Hoch': isDarkMode ? 'bg-red-600 text-white' : 'bg-red-500 text-white',
+  'Mittel': isDarkMode ? 'bg-yellow-600 text-white' : 'bg-yellow-500 text-white',
+  'Niedrig': isDarkMode ? 'bg-green-600 text-white' : 'bg-green-500 text-white'
+});
 
 // Color map for RACI responsibilities
-const raciColors = {
-  'R': 'bg-red-500 text-white',
-  'A': 'bg-amber-500 text-white',
-  'C': 'bg-blue-500 text-white',
-  'I': 'bg-green-500 text-white',
-  '': 'bg-gray-200'
-};
+const getRaciColors = (isDarkMode: boolean) => ({
+  'R': isDarkMode ? 'bg-red-600 text-white' : 'bg-red-500 text-white',
+  'A': isDarkMode ? 'bg-amber-600 text-white' : 'bg-amber-500 text-white',
+  'C': isDarkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white',
+  'I': isDarkMode ? 'bg-green-600 text-white' : 'bg-green-500 text-white',
+  '': isDarkMode ? 'bg-gray-700 dark:text-gray-400' : 'bg-gray-200'
+});
 
 export default function GovernanceChecklist() {
-  // Remove activeTab state since it's handled internally by the Tabs component
   const [, setActiveTab] = useState("framework");
+  const { isDarkMode } = useTheme();
+
+  // Get color maps with current theme
+  const complianceLevelColors = getComplianceLevelColors(isDarkMode);
+  const priorityColors = getPriorityColors(isDarkMode);
+  const raciColors = getRaciColors(isDarkMode);
 
   // Handle tab change
   const handleTabChange = (tabId: string) => {
@@ -379,7 +393,10 @@ export default function GovernanceChecklist() {
             Ein effektives KI-Governance-Framework umfasst verschiedene Komponenten, die zusammen einen 
             umfassenden Rahmen für die verantwortungsvolle und sichere Implementierung von KI-Technologien bilden.
           </PText>
-          <div className="h-[400px] border rounded-lg overflow-hidden">
+          <div className="h-[400px] border rounded-lg overflow-hidden" style={{ 
+            borderColor: 'var(--border-color)',
+            backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.3)' : 'rgba(249, 250, 251, 0.8)' 
+          }}>
             <ReactFlow
               nodes={initialNodes}
               edges={initialEdges}
@@ -387,10 +404,10 @@ export default function GovernanceChecklist() {
               fitView
             >
               <Controls />
-              <Background color="#aaa" gap={16} />
+              <Background color={isDarkMode ? '#4b5563' : '#aaa'} gap={16} />
             </ReactFlow>
           </div>
-          <div className="mt-4 text-sm text-gray-600">
+          <div className="mt-4 text-sm" style={{ color: isDarkMode ? 'rgba(209, 213, 219, 0.8)' : 'rgba(75, 85, 99, 0.8)' }}>
             <p>
               Das Framework zeigt die Hierarchie und Beziehungen zwischen den verschiedenen 
               Governance-Komponenten, vom strategischen KI-Governance-Board bis zur operativen Implementierung.
@@ -412,11 +429,14 @@ export default function GovernanceChecklist() {
           
           <div className="space-y-6">
             {complianceData.map((category, categoryIndex) => (
-              <div key={categoryIndex} className="border rounded-lg overflow-hidden">
-                <div className="bg-gray-100 px-4 py-2 font-semibold">
+              <div key={categoryIndex} className="border rounded-lg overflow-hidden" style={{ borderColor: 'var(--border-color)' }}>
+                <div className="px-4 py-2 font-semibold" style={{ 
+                  backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.6)' : 'rgba(243, 244, 246, 0.8)',
+                  color: isDarkMode ? 'var(--foreground)' : 'inherit'
+                }}>
                   {category.category}
                 </div>
-                <div className="divide-y">
+                <div className="divide-y" style={{ borderColor: 'var(--border-color)' }}>
                   {category.requirements.map((req, reqIndex) => (
                     <div key={reqIndex} className="p-4">
                       <div className="flex items-start">
@@ -427,7 +447,9 @@ export default function GovernanceChecklist() {
                               {req.priority}
                             </span>
                           </div>
-                          <p className="text-sm text-gray-600 mb-2">{req.description}</p>
+                          <p className="text-sm mb-2" style={{ color: isDarkMode ? 'rgba(209, 213, 219, 0.9)' : 'rgba(75, 85, 99, 0.9)' }}>
+                            {req.description}
+                          </p>
                         </div>
                         <div className={`ml-4 text-sm border px-2 py-1 rounded ${complianceLevelColors[req.complianceLevel]}`}>
                           {req.complianceLevel}
@@ -455,10 +477,10 @@ export default function GovernanceChecklist() {
           <div className="overflow-x-auto">
             <table className="min-w-full border-collapse">
               <thead>
-                <tr className="bg-gray-100">
-                  <th className="border px-4 py-2 text-left">Aktivität</th>
+                <tr style={{ backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.6)' : 'rgba(243, 244, 246, 0.8)' }}>
+                  <th className="border px-4 py-2 text-left" style={{ borderColor: 'var(--border-color)' }}>Aktivität</th>
                   {raciData[0].roles.map((role, roleIndex) => (
-                    <th key={roleIndex} className="border px-4 py-2 text-center whitespace-nowrap">
+                    <th key={roleIndex} className="border px-4 py-2 text-center whitespace-nowrap" style={{ borderColor: 'var(--border-color)' }}>
                       {role.role}
                     </th>
                   ))}
@@ -466,16 +488,20 @@ export default function GovernanceChecklist() {
               </thead>
               <tbody>
                 {raciData.map((item, itemIndex) => (
-                  <tr key={itemIndex} className={itemIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                    <td className="border px-4 py-2 font-medium">{item.activity}</td>
+                  <tr key={itemIndex} style={{ 
+                    backgroundColor: isDarkMode 
+                      ? (itemIndex % 2 === 0 ? 'var(--card-bg)' : 'rgba(31, 41, 55, 0.3)')
+                      : (itemIndex % 2 === 0 ? 'white' : 'rgba(243, 244, 246, 0.5)')
+                  }}>
+                    <td className="border px-4 py-2 font-medium" style={{ borderColor: 'var(--border-color)' }}>{item.activity}</td>
                     {item.roles.map((role, roleIndex) => (
-                      <td key={roleIndex} className="border px-4 py-2 text-center">
+                      <td key={roleIndex} className="border px-4 py-2 text-center" style={{ borderColor: 'var(--border-color)' }}>
                         {role.responsibility ? (
                           <span className={`inline-block w-6 h-6 rounded-full ${raciColors[role.responsibility]} flex items-center justify-center text-xs font-bold`}>
                             {role.responsibility}
                           </span>
                         ) : (
-                          <span className="inline-block w-6 h-6 rounded-full bg-gray-200"></span>
+                          <span className={`inline-block w-6 h-6 rounded-full ${raciColors['']}`}></span>
                         )}
                       </td>
                     ))}

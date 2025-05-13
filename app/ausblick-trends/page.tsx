@@ -3,6 +3,7 @@
 import React from 'react';
 import SectionHero from '@/components/sections/SectionHero';
 import SectionContent from '@/components/sections/SectionContent';
+import SectionSummary from '@/components/sections/SectionSummary';
 import InteractiveArea from '@/components/sections/InteractiveArea';
 import PHeading from '@/components/ui/PHeading';
 import PText from '@/components/ui/PText';
@@ -115,6 +116,21 @@ export default function AusblickTrendsPage() {
           </InteractiveArea>
         </div>
       </SectionContent>
+
+      <SectionSummary
+        title="Zusammenfassung: KI-Ausblick 2025-2030"
+        takeaways={[
+          "Multimodale KI-Systeme werden zum neuen Standard und ermöglichen nahtlose Interaktionen über verschiedene Medientypen hinweg.",
+          "KI-Agenten, die komplexe mehrstufige Aufgaben selbstständig ausführen können, gewinnen ab 2025 stark an Bedeutung.",
+          "Effiziente kleinere Modelle und lokale KI werden zunehmend wichtiger für datenschutzsensitive Anwendungen und Echtzeit-Verarbeitung.",
+          "Robuste KI-Governance-Frameworks sind entscheidend für die verantwortungsvolle und konforme Nutzung von KI-Technologien.",
+          "Die Automobilindustrie wird besonders von KI-Fortschritten in den Bereichen autonomes Fahren, prädiktive Wartung und personalisierte Benutzererlebnisse profitieren."
+        ]}
+        nextSection={{
+          name: "Ressourcen",
+          path: "/ressourcen"
+        }}
+      />
     </main>
   );
 } 

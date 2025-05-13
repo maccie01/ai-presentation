@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Line, Bar } from 'react-chartjs-2';
 import { motion } from 'framer-motion';
 import {
@@ -19,6 +19,16 @@ import {
 import PHeading from '@/components/ui/PHeading';
 import PText from '@/components/ui/PText';
 import Tabs from '@/components/ui/Tabs';
+import { useTheme } from '@/lib/themeContext';
+
+// Force light mode wrapper component with improved styling
+const LightModeWrapper: React.FC<{children: React.ReactNode}> = ({ children }) => {
+  return (
+    <div className="pds-theme-light" style={{color: '#000000', backgroundColor: '#ffffff', borderRadius: '0.5rem'}}>
+      {children}
+    </div>
+  );
+};
 
 // Register ChartJS components
 ChartJS.register(
@@ -200,6 +210,14 @@ const trendCards: TrendCardProps[] = [
 
 export default function TrendsForecast() {
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
+  const { isDarkMode } = useTheme();
+
+  // Chart.js color helpers
+  const axisTitleColor = isDarkMode ? '#ffffff' : '#1e293b';
+  const tickColor = isDarkMode ? '#ffffff' : '#1e293b';
+  const gridColor = isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(100,116,139,0.1)';
+  const legendColor = isDarkMode ? '#ffffff' : '#1e293b';
+  const bgColor = isDarkMode ? '#1e293b' : '#fff';
 
   const toggleCard = (index: number) => {
     if (expandedCard === index) {
@@ -218,7 +236,7 @@ export default function TrendsForecast() {
           Der Prozentsatz gibt an, wie viele Unternehmen die jeweilige Technologie voraussichtlich implementieren werden.
         </PText>
       </div>
-      <div className="h-80 w-full">
+      <div className="h-80 w-full p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
         <Line 
           data={adoptionData} 
           options={{
@@ -227,6 +245,12 @@ export default function TrendsForecast() {
             plugins: {
               legend: {
                 position: 'top' as const,
+                labels: { 
+                  color: legendColor,
+                  font: {
+                    weight: 'bold'
+                  }
+                },
               },
               tooltip: {
                 callbacks: {
@@ -242,14 +266,38 @@ export default function TrendsForecast() {
                 max: 100,
                 title: {
                   display: true,
-                  text: 'Adoptionsrate (%)'
-                }
+                  text: 'Adoptionsrate (%)',
+                  color: axisTitleColor,
+                  font: {
+                    weight: 'bold',
+                    size: 14
+                  }
+                },
+                ticks: { 
+                  color: tickColor,
+                  font: {
+                    weight: 'bold'
+                  } 
+                },
+                grid: { color: gridColor },
               },
               x: {
                 title: {
                   display: true,
-                  text: 'Jahr'
-                }
+                  text: 'Jahr',
+                  color: axisTitleColor,
+                  font: {
+                    weight: 'bold',
+                    size: 14
+                  }
+                },
+                ticks: { 
+                  color: tickColor,
+                  font: {
+                    weight: 'bold'
+                  } 
+                },
+                grid: { color: gridColor },
               }
             }
           }}
@@ -267,7 +315,7 @@ export default function TrendsForecast() {
           menschlichen Fähigkeitsniveau (100 = menschliche Leistung).
         </PText>
       </div>
-      <div className="h-80 w-full">
+      <div className="h-80 w-full p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
         <Line 
           data={capabilityData} 
           options={{
@@ -276,6 +324,12 @@ export default function TrendsForecast() {
             plugins: {
               legend: {
                 position: 'top' as const,
+                labels: { 
+                  color: legendColor,
+                  font: {
+                    weight: 'bold'
+                  }
+                },
               },
               tooltip: {
                 callbacks: {
@@ -291,14 +345,38 @@ export default function TrendsForecast() {
                 max: 100,
                 title: {
                   display: true,
-                  text: 'Fähigkeitsniveau (%)'
-                }
+                  text: 'Fähigkeitsniveau (%)',
+                  color: axisTitleColor,
+                  font: {
+                    weight: 'bold',
+                    size: 14
+                  }
+                },
+                ticks: { 
+                  color: tickColor,
+                  font: {
+                    weight: 'bold'
+                  } 
+                },
+                grid: { color: gridColor },
               },
               x: {
                 title: {
                   display: true,
-                  text: 'Jahr'
-                }
+                  text: 'Jahr',
+                  color: axisTitleColor,
+                  font: {
+                    weight: 'bold',
+                    size: 14
+                  }
+                },
+                ticks: { 
+                  color: tickColor,
+                  font: {
+                    weight: 'bold'
+                  } 
+                },
+                grid: { color: gridColor },
               }
             }
           }}
@@ -315,7 +393,7 @@ export default function TrendsForecast() {
           in Bezug auf Effizienzsteigerung, Kostenreduktion und neue Geschäftsmöglichkeiten.
         </PText>
       </div>
-      <div className="h-80 w-full">
+      <div className="h-80 w-full p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
         <Bar 
           data={impactData} 
           options={{
@@ -324,6 +402,12 @@ export default function TrendsForecast() {
             plugins: {
               legend: {
                 position: 'top' as const,
+                labels: { 
+                  color: legendColor,
+                  font: {
+                    weight: 'bold'
+                  }
+                },
               }
             },
             scales: {
@@ -331,14 +415,39 @@ export default function TrendsForecast() {
                 beginAtZero: true,
                 title: {
                   display: true,
-                  text: 'Auswirkung'
-                }
+                  text: 'Auswirkung',
+                  color: axisTitleColor,
+                  font: {
+                    weight: 'bold',
+                    size: 14
+                  }
+                },
+                ticks: { 
+                  color: tickColor,
+                  font: {
+                    weight: 'bold'
+                  } 
+                },
+                grid: { color: gridColor },
               },
               x: {
                 title: {
                   display: true,
-                  text: 'Branche'
-                }
+                  text: 'Branche',
+                  color: axisTitleColor,
+                  font: {
+                    weight: 'bold',
+                    size: 14
+                  }
+                },
+                ticks: { 
+                  color: tickColor,
+                  font: {
+                    weight: 'bold',
+                    size: 12
+                  } 
+                },
+                grid: { color: gridColor },
               }
             }
           }}
@@ -360,45 +469,72 @@ export default function TrendsForecast() {
           <motion.div
             key={index}
             className={`border rounded-lg shadow-sm p-4 cursor-pointer transition-all ${
-              expandedCard === index ? 'bg-blue-50 border-blue-300' : 'bg-white border-gray-200 hover:border-blue-200'
+              expandedCard === index 
+                ? isDarkMode ? 'bg-slate-200 border-blue-400' : 'bg-blue-50 border-blue-300'
+                : 'bg-card dark:bg-card border-border dark:border-border hover:border-blue-200 dark:hover:border-blue-400'
             }`}
             onClick={() => toggleCard(index)}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.1 }}
           >
-            <PHeading tag="h4" size="small" className="mb-2 flex items-center justify-between">
-              {card.title}
-              <span className={`text-sm px-2 py-1 rounded-full ${
-                expandedCard === index ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'
-              }`}>
-                {expandedCard === index ? '−' : '+'}
-              </span>
-            </PHeading>
-            
-            {expandedCard === index && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                transition={{ duration: 0.3 }}
-                className="mt-2"
-              >
-                <PText size="small" className="mb-2">{card.description}</PText>
-                <div className="grid grid-cols-2 gap-2 mt-3">
-                  <div className="border border-gray-200 rounded p-2 bg-gray-50">
-                    <PText size="small" className="font-semibold">Zeitrahmen</PText>
-                    <PText size="small">{card.timeline}</PText>
+            {expandedCard === index ? (
+              <div className={`${isDarkMode ? 'text-gray-900' : 'text-blue-800'}`}>
+                <PHeading tag="h4" size="small" className={`mb-2 flex items-center justify-between ${
+                  isDarkMode ? 'text-gray-900' : 'text-blue-800'
+                }`}>
+                  {card.title}
+                  <span className="text-sm px-2 py-1 rounded-full bg-blue-500 text-white">
+                    −
+                  </span>
+                </PHeading>
+                
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  transition={{ duration: 0.3 }}
+                  className="mt-2"
+                >
+                  <PText size="small" className={`mb-4 ${isDarkMode ? 'text-gray-900' : 'text-gray-800'} text-[15px] leading-relaxed`}>
+                    {card.description}
+                  </PText>
+                  <div className="grid grid-cols-2 gap-2 mt-3">
+                    <div className={`border rounded p-3 shadow-sm ${
+                      isDarkMode ? 'border-gray-400 bg-white' : 'border-gray-300 bg-gray-50'
+                    }`}>
+                      <PText size="small" className={`font-bold ${isDarkMode ? 'text-gray-900' : 'text-gray-800'}`}>
+                        Zeitrahmen
+                      </PText>
+                      <PText size="small" className={`${isDarkMode ? 'text-gray-900' : 'text-gray-800'} text-[14px]`}>
+                        {card.timeline}
+                      </PText>
+                    </div>
+                    <div className={`border rounded p-3 shadow-sm ${
+                      isDarkMode ? 'border-gray-400 bg-white' : 'border-gray-300 bg-gray-50'
+                    }`}>
+                      <PText size="small" className={`font-bold ${isDarkMode ? 'text-gray-900' : 'text-gray-800'}`}>
+                        Auswirkung
+                      </PText>
+                      <PText size="small" className={`${isDarkMode ? 'text-gray-900' : 'text-gray-800'} text-[14px]`}>
+                        {card.impact}
+                      </PText>
+                    </div>
                   </div>
-                  <div className="border border-gray-200 rounded p-2 bg-gray-50">
-                    <PText size="small" className="font-semibold">Auswirkung</PText>
-                    <PText size="small">{card.impact}</PText>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-            
-            {expandedCard !== index && (
-              <PText size="small" className="line-clamp-2">{card.description}</PText>
+                </motion.div>
+              </div>
+            ) : (
+              <>
+                <PHeading tag="h4" size="small" className="mb-2 flex items-center justify-between">
+                  {card.title}
+                  <span className="text-sm px-2 py-1 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
+                    +
+                  </span>
+                </PHeading>
+                
+                <PText size="small" className="line-clamp-2 text-gray-700 dark:text-gray-300">
+                  {card.description}
+                </PText>
+              </>
             )}
           </motion.div>
         ))}
@@ -407,7 +543,7 @@ export default function TrendsForecast() {
   );
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div className="bg-card dark:bg-card rounded-lg shadow-sm border border-border dark:border-border p-6">
       <Tabs
         tabs={[
           { id: 'adoption', label: 'Technologie-Adoptionskurven', content: adoptionCurvesContent },
